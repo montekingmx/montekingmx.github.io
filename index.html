@@ -37,7 +37,7 @@ body {
     user-select: none;
 }
 
-/* CURSOR PC */
+/* CURSOR (Solo PC) */
 @media (hover: hover) and (pointer: fine) {
     body { cursor: none; }
     .cursor {
@@ -52,8 +52,8 @@ body {
 .bg-texture { position: absolute; inset: -10%; background: url('assets/crocodile_texture.jpg') center/cover; opacity: 0.6; filter: brightness(0.4); }
 .bg-tint { position: absolute; inset: 0; background: var(--theme-bg-tint); mix-blend-mode: overlay; transition: background 0.5s; }
 .bg-smoke { position: absolute; inset: 0; background: url('https://raw.githubusercontent.com/SochavaAG/example-assets/master/fog1.png') repeat-x; background-size: 200% 100%; opacity: 0.3; animation: smoke 60s linear infinite; }
-#particles-js { position: absolute; inset: 0; }
-.sparkle { position: absolute; background: var(--theme-primary); border-radius: 50%; box-shadow: 0 0 10px var(--theme-primary); opacity: 0; pointer-events: none; }
+#particles-js { position: absolute; inset: 0; pointer-events: none; z-index: -5; }
+.sparkle { position: absolute; background: var(--theme-primary); border-radius: 50%; box-shadow: 0 0 10px var(--theme-primary); opacity: 0; }
 @keyframes smoke { 0%{background-position:0 0} 100%{background-position:-200% 0} }
 
 /* --- HEADER --- */
@@ -132,8 +132,8 @@ header { position: relative; padding: 15px; text-align: center; z-index: 10; }
     .card { height: 240px !important; }
     .card-title { font-size: 1.1rem !important; } 
     .card-bpm { font-size: 0.7rem !important; }
-    .card-play-btn { width: 32px !important; height: 32px !important; font-size: 0.9rem !important; }
-    .card-add-btn { width: 28px !important; height: 28px !important; font-size: 0.8rem !important; }
+    .card-play-btn { width: 35px !important; height: 35px !important; font-size: 1rem !important; }
+    .card-add-btn { width: 30px !important; height: 30px !important; font-size: 0.9rem !important; }
 }
 
 .card {
@@ -165,13 +165,13 @@ header { position: relative; padding: 15px; text-align: center; z-index: 10; }
     width: 45px; height: 45px; border-radius: 50%;
     border: 2px solid var(--theme-primary); color: var(--theme-primary);
     display: grid; place-items: center; font-size: 1.2rem;
-    background: rgba(0,0,0,0.6); transition: 0.2s;
+    background: rgba(0,0,0,0.6); transition: 0.2s; z-index: 5;
 }
 .card-add-btn {
     width: 35px; height: 35px; border-radius: 5px;
     background: var(--theme-primary); color: #000;
     display: grid; place-items: center; font-size: 1rem;
-    transition: 0.2s;
+    transition: 0.2s; z-index: 5;
 }
 .card-play-btn:active, .card-add-btn:active { transform: scale(0.9); }
 
@@ -220,29 +220,34 @@ header { position: relative; padding: 15px; text-align: center; z-index: 10; }
 }
 .pay-wa { background: #25D366; color: #fff; }
 
-/* --- PLAYER --- */
+/* --- PLAYER FOOTER --- */
 footer {
     position: fixed; bottom: 0; left: 0; width: 100%; z-index: 1000;
-    background: rgba(5,5,5,0.95); border-top: 3px solid var(--theme-primary);
-    padding: 10px 20px; backdrop-filter: blur(10px);
+    background: rgba(5,5,5,0.98); border-top: 3px solid var(--theme-primary);
+    padding: 10px 20px;
     display: grid; grid-template-columns: 2fr 3fr 2fr; align-items: center;
     box-shadow: 0 -5px 30px rgba(0,0,0,0.8);
 }
 @media (max-width: 768px) {
-    footer { display: flex; flex-direction: column; height: 130px; padding: 10px; gap: 5px; }
+    footer { display: flex; flex-direction: column; height: 135px; padding: 15px 10px; gap: 8px; }
     .player-right { display: none !important; }
     .player-info { width: 100%; text-align: center; }
 }
-#viz-canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; opacity: 0.2; pointer-events: none; }
+#viz-canvas { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; opacity: 0.2; pointer-events: none; z-index: -1; }
 
 .current-title { font-family: 'Pirata One'; font-size: 1.3rem; color: var(--theme-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%; }
 .current-artist { font-size: 0.8rem; color: #888; }
-.player-controls { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.btns { display: flex; gap: 20px; align-items: center; font-size: 1.5rem; }
-.btns i { cursor: pointer; color: #fff; }
-.play-main { font-size: 2.5rem !important; }
+
+/* CONTROLS (HIGH PRIORITY Z-INDEX) */
+.player-controls { 
+    display: flex; flex-direction: column; align-items: center; gap: 5px; 
+    position: relative; z-index: 9999; /* Asegura clic en movil */
+}
+.btns { display: flex; gap: 25px; align-items: center; font-size: 1.6rem; }
+.btns i { cursor: pointer; color: #fff; padding: 5px; } /* Padding aumenta area de toque */
+.play-main { font-size: 2.8rem !important; }
 .prog-bar { width: 100%; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--theme-primary); }
-input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: pointer; }
+input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: pointer; height: 20px; /* Mas facil de agarrar */ }
 .player-right { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
 
 </style>
@@ -369,9 +374,9 @@ input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: poi
     </div>
     <div class="player-controls">
         <div class="btns">
-            <i class="fas fa-step-backward" onclick="Amplitude.prev()"></i>
-            <i class="fas fa-play-circle play-main" id="play-btn" onclick="Amplitude.playPause()"></i>
-            <i class="fas fa-step-forward" onclick="Amplitude.next()"></i>
+            <i class="fas fa-step-backward amplitude-prev"></i>
+            <i class="fas fa-play-circle play-main amplitude-play-pause" id="play-btn"></i>
+            <i class="fas fa-step-forward amplitude-next"></i>
         </div>
         <div class="prog-bar">
             <span class="amplitude-current-time">0:00</span>
@@ -398,19 +403,19 @@ input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: poi
     
     let lastClickedIndex = 0;
 
-    /* 2. AMPLITUDE */
+    /* 2. AMPLITUDE INIT (ICON FIX) */
     Amplitude.init({
         songs: songs, volume: 80,
         callbacks: {
             play: ()=>{ 
-                document.getElementById('play-btn').className='fas fa-pause-circle play-main';
+                document.getElementById('play-btn').className='fas fa-pause-circle play-main amplitude-play-pause';
                 document.querySelectorAll('.card').forEach(c=>c.classList.remove('playing'));
                 const idx = Amplitude.getActiveIndex();
                 const card = document.querySelector(`.card[data-index="${idx}"]`);
                 if(card) card.classList.add('playing');
                 initAudio();
             },
-            pause: ()=>{ document.getElementById('play-btn').className='fas fa-play-circle play-main'; },
+            pause: ()=>{ document.getElementById('play-btn').className='fas fa-play-circle play-main amplitude-play-pause'; },
             song_change: ()=>{
                 const m=Amplitude.getActiveSongMetadata();
                 document.getElementById('p-title').innerText=m.name;
@@ -513,7 +518,7 @@ input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: poi
         window.open(`https://wa.me/5218180106247?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
-    /* 6. VISUALIZER */
+    /* 6. VISUALIZER & PARTICLES (ACTIVADAS EN MOVIL) */
     let actx,anl,cnv,ctx;
     function initAudio(){
         if(actx)return;
@@ -537,20 +542,25 @@ input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: poi
     }
     document.body.addEventListener('click', ()=>{if(!actx)initAudio();},{once:true});
 
-    // Particles & Mouse (PC Only)
-    if(window.matchMedia("(hover: hover)").matches){
-        const pc=document.getElementById('particles-js');
-        function sp(){
-            const p=document.createElement('div'); p.className='sparkle';
-            p.style.left=Math.random()*100+'vw'; p.style.top=Math.random()*100+'vh';
-            const s=Math.random()*4+1; p.style.width=s+'px'; p.style.height=s+'px';
-            p.style.transition=`transform ${Math.random()*5+3}s linear, opacity 3s ease`;
-            pc.appendChild(p);
-            setTimeout(()=>{p.style.transform=`translate(${(Math.random()-0.5)*200}px, ${(Math.random()-0.5)*200}px)`; p.style.opacity=Math.random()},50);
-            setTimeout(()=>{p.remove();sp()},4000);
-        }
-        for(let i=0;i<40;i++)setTimeout(sp,Math.random()*4000);
-        
+    // PARTICLES (OPTIMIZED FOR MOBILE)
+    const pc=document.getElementById('particles-js');
+    // Si es movil (<768px), usa 20 particulas. Si es PC, usa 50.
+    const isMobile = window.innerWidth < 768;
+    const pCount = isMobile ? 20 : 50; 
+
+    function sp(){
+        const p=document.createElement('div'); p.className='sparkle';
+        p.style.left=Math.random()*100+'vw'; p.style.top=Math.random()*100+'vh';
+        const s=Math.random()*4+1; p.style.width=s+'px'; p.style.height=s+'px';
+        p.style.transition=`transform ${Math.random()*5+3}s linear, opacity 3s ease`;
+        pc.appendChild(p);
+        setTimeout(()=>{p.style.transform=`translate(${(Math.random()-0.5)*200}px, ${(Math.random()-0.5)*200}px)`; p.style.opacity=Math.random()},50);
+        setTimeout(()=>{p.remove();sp()},4000);
+    }
+    for(let i=0;i<pCount;i++)setTimeout(sp,Math.random()*4000);
+    
+    // MOUSE TRAIL (PC ONLY)
+    if(!isMobile){
         const curs=document.querySelector('.cursor');
         document.addEventListener('mousemove',e=>{
             curs.style.left=e.clientX+'px'; curs.style.top=e.clientY+'px';
