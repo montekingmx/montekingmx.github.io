@@ -3,13 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Catálogo de Beats Oficial | MONTEKING MX</title>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Catálogo Oficial | MONTEKING MX</title>
 
 <meta property="og:type" content="website">
@@ -73,7 +66,15 @@ body {
 .bg-tint { position: absolute; inset: 0; background: var(--theme-bg-tint); mix-blend-mode: overlay; transition: background 0.5s; }
 .bg-smoke { position: absolute; inset: 0; background: url('https://raw.githubusercontent.com/SochavaAG/example-assets/master/fog1.png') repeat-x; background-size: 200% 100%; opacity: 0.3; animation: smoke 60s linear infinite; }
 #particles-js { position: absolute; inset: 0; pointer-events: none; z-index: -5; }
-.sparkle { position: absolute; background: var(--theme-primary); border-radius: 50%; box-shadow: 0 0 10px var(--theme-primary); opacity: 0; }
+
+/* CHISPAS OPTIMIZADAS */
+.sparkle { 
+    position: absolute; 
+    background: var(--theme-primary); 
+    border-radius: 50%; 
+    box-shadow: 0 0 15px var(--theme-primary); /* Glow más fuerte */
+    opacity: 0; 
+}
 @keyframes smoke { 0%{background-position:0 0} 100%{background-position:-200% 0} }
 
 /* --- HEADER --- */
@@ -258,16 +259,16 @@ footer {
 .current-title { font-family: 'Pirata One'; font-size: 1.3rem; color: var(--theme-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; max-width: 100%; }
 .current-artist { font-size: 0.8rem; color: #888; }
 
-/* CONTROLS (HIGH PRIORITY Z-INDEX) */
+/* CONTROLS */
 .player-controls { 
     display: flex; flex-direction: column; align-items: center; gap: 5px; 
-    position: relative; z-index: 9999; /* Asegura clic en movil */
+    position: relative; z-index: 9999;
 }
 .btns { display: flex; gap: 25px; align-items: center; font-size: 1.6rem; }
-.btns i { cursor: pointer; color: #fff; padding: 5px; } /* Padding aumenta area de toque */
+.btns i { cursor: pointer; color: #fff; padding: 5px; }
 .play-main { font-size: 2.8rem !important; }
 .prog-bar { width: 100%; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--theme-primary); }
-input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: pointer; height: 20px; /* Mas facil de agarrar */ }
+input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: pointer; height: 20px; }
 .player-right { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
 
 </style>
@@ -428,14 +429,19 @@ input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: poi
         songs: songs, volume: 80,
         callbacks: {
             play: ()=>{ 
-                document.getElementById('play-btn').className='fas fa-pause-circle play-main amplitude-play-pause';
+                document.getElementById('play-btn').classList.remove('fa-play-circle');
+                document.getElementById('play-btn').classList.add('fa-pause-circle');
+                
                 document.querySelectorAll('.card').forEach(c=>c.classList.remove('playing'));
                 const idx = Amplitude.getActiveIndex();
                 const card = document.querySelector(`.card[data-index="${idx}"]`);
                 if(card) card.classList.add('playing');
                 initAudio();
             },
-            pause: ()=>{ document.getElementById('play-btn').className='fas fa-play-circle play-main amplitude-play-pause'; },
+            pause: ()=>{ 
+                document.getElementById('play-btn').classList.remove('fa-pause-circle');
+                document.getElementById('play-btn').classList.add('fa-play-circle');
+            },
             song_change: ()=>{
                 const m=Amplitude.getActiveSongMetadata();
                 document.getElementById('p-title').innerText=m.name;
@@ -562,21 +568,36 @@ input[type=range] { width: 100%; accent-color: var(--theme-primary); cursor: poi
     }
     document.body.addEventListener('click', ()=>{if(!actx)initAudio();},{once:true});
 
-    // PARTICLES (OPTIMIZED FOR MOBILE)
+    // PARTICLES (OPTIMIZED FOR MOBILE VISIBILITY)
     const pc=document.getElementById('particles-js');
-    // Si es movil (<768px), usa 20 particulas. Si es PC, usa 50.
     const isMobile = window.innerWidth < 768;
-    const pCount = isMobile ? 20 : 50; 
+    
+    // En movil ponemos 35 (antes 20) para que se vean, en PC 60
+    const pCount = isMobile ? 35 : 60; 
 
     function sp(){
         const p=document.createElement('div'); p.className='sparkle';
         p.style.left=Math.random()*100+'vw'; p.style.top=Math.random()*100+'vh';
-        const s=Math.random()*4+1; p.style.width=s+'px'; p.style.height=s+'px';
+        
+        // TAMAÑO: En movil las hacemos MAS GRANDES (3-7px) vs PC (1-5px) para visibilidad
+        const sizeBase = isMobile ? 3 : 1;
+        const sizeRand = isMobile ? 4 : 4;
+        const s = Math.random() * sizeRand + sizeBase; 
+        
+        p.style.width=s+'px'; p.style.height=s+'px';
         p.style.transition=`transform ${Math.random()*5+3}s linear, opacity 3s ease`;
         pc.appendChild(p);
-        setTimeout(()=>{p.style.transform=`translate(${(Math.random()-0.5)*200}px, ${(Math.random()-0.5)*200}px)`; p.style.opacity=Math.random()},50);
-        setTimeout(()=>{p.remove();sp()},4000);
+        
+        // Movimiento
+        setTimeout(()=>{
+            const move = isMobile ? 100 : 200; // Menor movimiento en movil
+            p.style.transform=`translate(${(Math.random()-0.5)*move}px, ${(Math.random()-0.5)*move}px)`; 
+            p.style.opacity=Math.random(); // Brillo random
+        },50);
+        
+        setTimeout(()=>{p.remove();sp()},4000); // Ciclo de vida
     }
+    // Iniciar loop
     for(let i=0;i<pCount;i++)setTimeout(sp,Math.random()*4000);
     
     // MOUSE TRAIL (PC ONLY)
