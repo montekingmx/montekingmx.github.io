@@ -1,1 +1,0 @@
-import{j as i}from"./index-CO1W_AJW.js";import{M as s}from"./MusicSection-H5Z1hoIP.js";function o(){return i.jsx("div",{className:"min-h-screen bg-obsidian-dark pt-24 pb-20",children:i.jsx(s,{})})}export{o as Music};

@@ -1,1 +1,0 @@
-import{j as i}from"./index-CO1W_AJW.js";import{V as s}from"./VideosSection-D4KEZ-64.js";function e(){return i.jsx("div",{className:"min-h-screen bg-obsidian-dark pt-24 pb-20",children:i.jsx(s,{})})}export{e as Videos};

@@ -1,1 +1,0 @@
-import{j as r}from"./index-CO1W_AJW.js";import{M as e}from"./MerchSection-BSrieny7.js";function n(){return r.jsx("div",{className:"min-h-screen bg-obsidian-dark pt-24 pb-20",children:r.jsx(e,{})})}export{n as Merch};
