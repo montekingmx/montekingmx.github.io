@@ -1,109 +1,312 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sliders, Mic, Disc, Sparkles, Check, MessageSquare } from 'lucide-react';
-import { useCart } from '../context/CartContext';
+import { 
+  Music, Mic, Headphones, Disc, Radio, MessageCircle, 
+  Globe, CheckCircle, Star, ArrowRight, Zap, Film, Sparkles, ExternalLink
+} from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { SAMPLE_PACKS } from '@/data/samplePacksData';
 
 const SERVICES = [
   {
-    title: 'Producción Custom de Beats',
-    price: '$199 USD',
-    desc: 'Un instrumental diseñado desde cero exclusivamente a la medida de tu concepto vocal y estilo artístico.',
-    features: ['Arreglo exclusivo', 'Pistas por separado (Stems)', 'Mezcla y Master incluidos', 'Sesión de revisión 1 a 1'],
-    icon: Disc,
+    icon: Music,
+    title: "Producción Musical & Beats",
+    description: "Beats originales, arreglos exclusivos y composición completa para tu álbum o sencillo.",
+    features: ["Beat Original Exclusivo", "Arreglos & Estructura", "Composición Pro", "Stems WAV 24-Bit"],
+    price: "Desde $2,500 MXN",
+    color: "yellow",
+    image: "assets/service_produccion.jpg"
   },
   {
-    title: 'Mezcla & Master de Canción',
-    price: '$149 USD',
-    desc: 'Tratamiento analógico y digital de tus voces sobre la pista para lograr potencia, nitidez y nivel de competencia comercial.',
-    features: ['Afinación y edición de voz', 'Ecualización & compresión multi-banda', 'Efectos creativos (reverbs, delays, pitches)', 'Master para Spotify & Apple Music'],
-    icon: Sliders,
+    icon: Headphones,
+    title: "Mezcla & Mastering (-8 LUFS)",
+    description: "Tratamiento acústico, ecualización quirúrgica y mastering con estándar de impacto de -8 LUFS.",
+    features: ["Mezcla por Stems", "Mastering Competitivo (-8 LUFS)", "Revisiones Ilimitadas", "Entrega en 48 hrs"],
+    price: "Desde $1,500 MXN",
+    color: "purple",
+    image: "assets/service_mastering.jpg"
   },
   {
-    title: 'Grabación de Estudio (Monterrey NL)',
-    price: '$45 USD / hr',
-    desc: 'Sesión presencial de grabación en nuestro estudio en Monterrey con microfonía de condensador de alta gama y dirección vocal.',
-    features: ['Directamente con Monteking', 'Monitoreo profesional', 'Cabina acoplada acústicamente', 'Entrega de archivos brutos'],
     icon: Mic,
+    title: "Grabación en Estudio Monterrey",
+    description: "Sesiones de grabación en cabina profesional insonorizada con preamps valvulares.",
+    features: ["Micrófono de Gama Alta", "Ingeniero de Sonido", "Asistencia de Vocals", "Presencial en MTY"],
+    price: "$800 MXN / hora",
+    color: "blue",
+    image: "assets/service_grabacion.jpg"
+  },
+  {
+    icon: Radio,
+    title: "Ghost Production & Beatmaking",
+    description: "Producción musical integral bajo tu autoría comercial y confidencialidad garantizada.",
+    features: ["100% Derechos & Regalías", "Acuerdo de Confidencialidad", "Track Completo Stems + MIDI", "Mezcla Incluida"],
+    price: "Desde $5,000 MXN",
+    color: "red",
+    image: "assets/service_ghost.jpg"
+  },
+  {
+    icon: Film,
+    title: "Dirección de Videoclips 4K",
+    description: "Producción audiovisual cinematográfica, edición, corrección de color y efectos visuales.",
+    features: ["Cámara 4K Cinema", "Dirección de Arte", "Edición & VFX", "Color Grading"],
+    price: "Desde $6,500 MXN",
+    color: "pink",
+    image: "assets/service_videoclips.jpg"
+  },
+  {
+    icon: Globe,
+    title: "Distribución & Lanzamiento Global",
+    description: "Distribución a Spotify, Apple Music, TikTok y monetización en YouTube Content ID.",
+    features: ["Distribución Global", "Pitch a Playlists Oficiales", "ISRC & UPC Códigos", "Soporte 24/7"],
+    price: "Consultar Plan",
+    color: "green",
+    image: "assets/service_distribucion.jpg"
   },
 ];
 
-export default function Services() {
-  const { generateWhatsAppLink } = useCart();
+const colorClasses = {
+  yellow: "border-yellow-500/30 hover:border-yellow-500/60 shadow-yellow-500/10",
+  purple: "border-purple-500/30 hover:border-purple-500/60 shadow-purple-500/10",
+  blue: "border-blue-500/30 hover:border-blue-500/60 shadow-blue-500/10",
+  red: "border-red-500/30 hover:border-red-500/60 shadow-red-500/10",
+  pink: "border-pink-500/30 hover:border-pink-500/60 shadow-pink-500/10",
+  green: "border-green-500/30 hover:border-green-500/60 shadow-green-500/10",
+};
 
-  const handleBookService = (service) => {
-    const text = `¡Hola Monteking! Me interesa contratar el servicio de *${service.title}* (${service.price}).`;
-    window.open(`https://wa.me/528100000000?text=${encodeURIComponent(text)}`, '_blank');
+export default function ServicesPage() {
+  const [selectedService, setSelectedService] = useState(null);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    details: '',
+  });
+
+  const handleContactSubmit = (e) => {
+    e.preventDefault();
+    const message = `¡Hola Monteking MX! 🎯 Me interesa el servicio de *${selectedService?.title}*.\n\nNombre: ${formData.name}\nEmail: ${formData.email}\nTeléfono: ${formData.phone}\nDetalles: ${formData.details}`;
+    window.open(`https://wa.me/5218180106247?text=${encodeURIComponent(message)}`, '_blank');
+    setIsContactOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-obsidian-dark pt-28 pb-20 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         
         {/* Header */}
-        <div className="text-center mb-14">
-          <span className="text-xs font-mono font-bold tracking-widest text-gold uppercase mb-2 block">
-            SERVICIOS DE ESTUDIO
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-16"
+        >
+          <span className="text-yellow-400 uppercase tracking-[0.3em] text-xs font-bold font-mono">
+            Monteking Records 13-11 • Servicios Pro
           </span>
-          <h1 className="font-cinzel font-black text-4xl sm:text-6xl text-white">
-            SERVICIOS <span className="text-gold-gradient">PROFESIONALES</span>
+          <h1 className="font-pirata text-5xl sm:text-7xl font-bold text-white mt-3 mb-4 tracking-wider">
+            SERVICIOS DE <span className="text-stroke-gold">PRODUCCIÓN</span>
           </h1>
-          <p className="text-sm text-gray-400 mt-3 max-w-xl mx-auto">
-            Lleva tu sonido al nivel de las grandes producciones. Servicios de producción a medida, mezcla y masterización desde Monterrey, MX.
+          <p className="text-zinc-400 text-base max-w-2xl mx-auto font-sans">
+            Desde la creación del beat hasta el master final y el videoclip oficial con calidad de industria internacional.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {SERVICES.map((srv, idx) => {
-            const Icon = srv.icon;
-            return (
-              <motion.div
-                key={srv.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.15 }}
-                className="glass-card rounded-3xl p-8 border border-gold/20 hover:border-gold/60 glass-card-hover flex flex-col justify-between"
-              >
+        {/* Services Grid (Item 5) */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
+          {SERVICES.map((service, index) => (
+            <motion.div
+              key={service.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.08 }}
+            >
+              <Card className={`bg-gradient-to-b from-zinc-900 to-black border-2 ${colorClasses[service.color]} rounded-3xl h-full overflow-hidden group hover:scale-[1.02] transition-all duration-300 shadow-2xl flex flex-col justify-between`}>
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 rounded-2xl bg-gold/10 text-gold border border-gold/30">
-                      <Icon className="w-6 h-6" />
+                  {/* High Quality Card Image Cover */}
+                  <div className="relative h-48 overflow-hidden bg-black border-b border-zinc-800">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95 contrast-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
+                    <div className="absolute bottom-3 left-4 w-11 h-11 rounded-2xl bg-yellow-400 text-black flex items-center justify-center shadow-lg font-bold">
+                      <service.icon className="w-5 h-5" />
                     </div>
-                    <span className="font-mono font-bold text-xl text-gold-gradient">
-                      {srv.price}
-                    </span>
                   </div>
 
-                  <h3 className="font-cinzel font-bold text-xl text-white mb-2">
-                    {srv.title}
-                  </h3>
+                  <CardHeader className="p-6">
+                    <CardTitle className="text-white font-oswald text-xl font-bold">{service.title}</CardTitle>
+                    <p className="text-zinc-400 text-xs font-sans mt-1.5 leading-relaxed">{service.description}</p>
+                  </CardHeader>
 
-                  <p className="text-xs text-gray-300 leading-relaxed mb-6">
-                    {srv.desc}
-                  </p>
-
-                  <div className="space-y-2 mb-8">
-                    {srv.features.map((feat) => (
-                      <div key={feat} className="flex items-center gap-2 text-xs text-gray-300">
-                        <Check className="w-4 h-4 text-gold shrink-0" />
-                        <span>{feat}</span>
-                      </div>
-                    ))}
-                  </div>
+                  <CardContent className="px-6 pb-6">
+                    <ul className="space-y-2 mb-6">
+                      {service.features.map((feature) => (
+                        <li key={feature} className="flex items-center gap-2 text-zinc-300 text-xs font-mono">
+                          <CheckCircle className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0" />
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
                 </div>
 
-                <button
-                  onClick={() => handleBookService(srv)}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gold text-obsidian-dark font-bold text-xs uppercase tracking-wider shadow-gold-glow hover:brightness-110 transition-all"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Cotizar por WhatsApp</span>
-                </button>
-              </motion.div>
-            );
-          })}
+                <div className="p-6 pt-0 border-t border-zinc-800/80 flex items-center justify-between mt-auto">
+                  <span className="text-yellow-400 font-bold font-oswald text-base">{service.price}</span>
+                  <Button 
+                    size="sm"
+                    className="bg-yellow-400 text-black hover:bg-yellow-300 font-bold font-oswald text-xs rounded-xl px-4 py-2"
+                    onClick={() => {
+                      setSelectedService(service);
+                      setIsContactOpen(true);
+                    }}
+                  >
+                    Cotizar Ahora
+                    <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                  </Button>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
         </div>
+
+        {/* Sample Packs Section with the 4 Dedicated Covers (Item 5) */}
+        <section className="mb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <span className="text-yellow-400 uppercase tracking-[0.3em] text-xs font-bold font-mono">
+              Recursos de Producción 24-Bit
+            </span>
+            <h2 className="font-pirata text-4xl sm:text-6xl font-bold text-white mt-2">
+              SAMPLE PACKS & <span className="text-stroke-gold">DRUM KITS</span>
+            </h2>
+            <p className="text-zinc-400 text-sm max-w-xl mx-auto mt-2">
+              Librerías completas de baterías, 808s y loops analógicos grabados y procesados en estudio.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {SAMPLE_PACKS.map((pack, index) => (
+              <motion.div
+                key={pack.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+              >
+                <Card className="bg-zinc-950 border-2 border-zinc-800 hover:border-yellow-400 rounded-3xl h-full transition-all group overflow-hidden flex flex-col justify-between shadow-2xl">
+                  <div>
+                    <div className="w-full aspect-square relative rounded-t-2xl overflow-hidden bg-black border-b border-zinc-800">
+                      <img
+                        src={pack.cover}
+                        alt={pack.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 brightness-95"
+                      />
+                      <div className="absolute top-2 right-2 bg-yellow-400 text-black px-2.5 py-1 rounded-full text-[10px] font-mono font-bold">
+                        {pack.badge}
+                      </div>
+                    </div>
+
+                    <CardHeader className="p-5">
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase">{pack.category}</span>
+                      <CardTitle className="text-white font-oswald text-base font-bold mt-1 line-clamp-1">{pack.title}</CardTitle>
+                      <p className="text-zinc-400 text-xs mt-1 font-sans line-clamp-2">{pack.subtitle}</p>
+                    </CardHeader>
+                  </div>
+
+                  <div className="p-5 pt-0">
+                    <div className="pt-3 border-t border-zinc-800 flex items-center justify-between">
+                      <div>
+                        <span className="text-zinc-500 line-through text-xs mr-1.5 font-mono">${pack.originalPrice}</span>
+                        <span className="text-xl font-bold font-oswald text-yellow-400">${pack.price} MXN</span>
+                      </div>
+                      <a href="/Merch" className="bg-yellow-400 hover:bg-yellow-300 text-black px-3.5 py-2 rounded-xl text-xs font-bold font-oswald uppercase transition-transform active:scale-95">
+                        Ver Pack
+                      </a>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Contact Dialog */}
+        <Dialog open={isContactOpen} onOpenChange={setIsContactOpen}>
+          <DialogContent className="bg-zinc-950 border-2 border-yellow-500/40 text-white rounded-3xl max-w-lg p-6 sm:p-8">
+            <DialogHeader>
+              <DialogTitle className="font-pirata text-3xl text-yellow-400">
+                Cotizar {selectedService?.title}
+              </DialogTitle>
+              <p className="text-zinc-400 text-xs">
+                Déjanos tus datos y nos comunicamos directamente por WhatsApp en minutos.
+              </p>
+            </DialogHeader>
+            <form onSubmit={handleContactSubmit} className="space-y-4 mt-4">
+              <div>
+                <label className="text-xs font-mono text-zinc-400 uppercase block mb-1">Nombre Completo / Artista</label>
+                <Input
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Ej. MC Monte"
+                  className="bg-black border-zinc-800 text-white rounded-xl"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-mono text-zinc-400 uppercase block mb-1">WhatsApp / Teléfono</label>
+                  <Input
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="+52 81..."
+                    className="bg-black border-zinc-800 text-white rounded-xl"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-mono text-zinc-400 uppercase block mb-1">Email</label>
+                  <Input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="contacto@..."
+                    className="bg-black border-zinc-800 text-white rounded-xl"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-mono text-zinc-400 uppercase block mb-1">Detalles del Proyecto</label>
+                <Textarea
+                  rows={4}
+                  value={formData.details}
+                  onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                  placeholder="Cuéntanos sobre tu idea, referencias musicales o fechas de entrega..."
+                  className="bg-black border-zinc-800 text-white rounded-xl"
+                />
+              </div>
+              <Button type="submit" className="w-full py-6 bg-yellow-400 hover:bg-yellow-300 text-black font-black font-oswald text-sm uppercase rounded-2xl shadow-xl shadow-yellow-500/20">
+                Enviar por WhatsApp Directo
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
 
       </div>
     </div>
