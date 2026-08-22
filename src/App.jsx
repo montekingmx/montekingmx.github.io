@@ -1,77 +1,82 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AudioProvider } from './context/AudioContext';
-import { CartProvider } from './context/CartContext';
-import { Navbar } from './components/Navbar';
-import { AudioPlayer } from './components/AudioPlayer';
-import { LicenseModal } from './components/LicenseModal';
-import { CartDrawer } from './components/CartDrawer';
-import { Toaster } from 'sonner';
-import { Disc } from 'lucide-react';
+import { Toaster } from "@/components/ui/toaster"
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClientInstance } from '@/lib/query-client'
+import NavigationTracker from '@/lib/NavigationTracker'
+import { pagesConfig } from './pages.config'
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import PageNotFound from './lib/PageNotFound';
+import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { AudioProvider } from '@/context/AudioContext';
+import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
-const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
-const Beats = lazy(() => import('./pages/Beats').then(m => ({ default: m.Beats })));
-const Music = lazy(() => import('./pages/Music').then(m => ({ default: m.Music })));
-const Videos = lazy(() => import('./pages/Videos').then(m => ({ default: m.Videos })));
-const Merch = lazy(() => import('./pages/Merch').then(m => ({ default: m.Merch })));
-const LyricVideo = lazy(() => import('./pages/LyricVideo'));
-const ProdInfo = lazy(() => import('./pages/ProdInfo'));
-const Services = lazy(() => import('./pages/Services'));
-const Gallery = lazy(() => import('./pages/Gallery'));
-const Game = lazy(() => import('./pages/Game'));
-const About = lazy(() => import('./pages/About'));
-const Team = lazy(() => import('./pages/Team'));
-const Membership = lazy(() => import('./pages/Membership'));
+const { Pages, Layout, mainPage } = pagesConfig;
+const mainPageKey = mainPage ?? Object.keys(Pages)[0];
+const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
-function PageLoader() {
+const LayoutWrapper = ({ children, currentPageName }) => Layout ?
+  <Layout currentPageName={currentPageName}>{children}</Layout>
+  : <>{children}</>;
+
+const AuthenticatedApp = () => {
+  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+
+  // Show loading spinner while checking app public settings or auth
+  if (isLoadingPublicSettings || isLoadingAuth) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black">
+        <div className="w-8 h-8 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Handle authentication errors
+  if (authError) {
+    if (authError.type === 'user_not_registered') {
+      return <UserNotRegisteredError />;
+    } else if (authError.type === 'auth_required') {
+      navigateToLogin();
+      return null;
+    }
+  }
+
+  // Render the main app
   return (
-    <div className="min-h-screen bg-obsidian-dark flex flex-col items-center justify-center text-gold">
-      <Disc className="w-12 h-12 animate-spin mb-4 text-gold" style={{ animationDuration: '4s' }} />
-      <span className="font-cinzel text-sm font-bold tracking-widest uppercase text-gold-gradient">
-        Cargando Monteking 2030...
-      </span>
-    </div>
+    <Routes>
+      <Route path="/" element={
+        <LayoutWrapper currentPageName={mainPageKey}>
+          <MainPage />
+        </LayoutWrapper>
+      } />
+      {Object.entries(Pages).map(([path, Page]) => (
+        <Route
+          key={path}
+          path={`/${path}`}
+          element={
+            <LayoutWrapper currentPageName={path}>
+              <Page />
+            </LayoutWrapper>
+          }
+        />
+      ))}
+      <Route path="*" element={<PageNotFound />} />
+    </Routes>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <QueryClientProvider client={queryClientInstance}>
+        <AudioProvider>
+          <Router>
+            <NavigationTracker />
+            <AuthenticatedApp />
+          </Router>
+          <Toaster />
+        </AudioProvider>
+      </QueryClientProvider>
+    </AuthProvider>
   );
 }
 
-export default function App() {
-  return (
-    <Router>
-      <AudioProvider>
-        <CartProvider>
-          <div className="min-h-screen bg-obsidian-dark text-foreground font-sans relative selection:bg-gold selection:text-obsidian-dark">
-            <Toaster position="top-right" theme="dark" toastOptions={{
-              style: { background: '#121216', border: '1px solid rgba(212, 175, 55, 0.3)', color: '#fff' }
-            }} />
-
-            <Navbar />
-
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/beats" element={<Beats />} />
-                <Route path="/music" element={<Music />} />
-                <Route path="/videos" element={<Videos />} />
-                <Route path="/merch" element={<Merch />} />
-                <Route path="/lyric-video" element={<LyricVideo />} />
-                <Route path="/prod-info" element={<ProdInfo />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/gallery" element={<Gallery />} />
-                <Route path="/game" element={<Game />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/team" element={<Team />} />
-                <Route path="/membership" element={<Membership />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-
-            {/* Global Overlays & Persistent Audio Player */}
-            <AudioPlayer />
-            <LicenseModal />
-            <CartDrawer />
-          </div>
-        </CartProvider>
-      </AudioProvider>
-    </Router>
-  );
-}
+export default App;

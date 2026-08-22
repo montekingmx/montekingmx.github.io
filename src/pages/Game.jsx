@@ -1,101 +1,104 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Square, Gamepad2, Volume2, Sparkles, RefreshCw } from 'lucide-react';
-import { toast } from 'sonner';
+import { Gamepad2, Mic, Music2, Car } from 'lucide-react';
+import GTAMKCityCruiser from '../components/games/GTAMKCityCruiser';
+import PacManGame from '../components/games/PacManGame';
+import AudioSpectrogram from '../components/games/AudioSpectrogram';
+import VirtualPiano from '../components/games/VirtualPiano';
 
-const PADS = [
-  { id: 1, name: 'Kick 808', color: 'from-amber-500 to-yellow-600', key: 'Q' },
-  { id: 2, name: 'Snare Memphis', color: 'from-gold to-gold-dark', key: 'W' },
-  { id: 3, name: 'Hi-Hat Roll', color: 'from-yellow-400 to-amber-600', key: 'E' },
-  { id: 4, name: 'Open Hat', color: 'from-amber-600 to-yellow-700', key: 'R' },
-  { id: 5, name: 'Clap 13-11', color: 'from-yellow-500 to-amber-700', key: 'A' },
-  { id: 6, name: 'Perc FX', color: 'from-gold-light to-gold', key: 'S' },
-  { id: 7, name: 'Vocal Chant', color: 'from-amber-400 to-yellow-600', key: 'D' },
-  { id: 8, name: '808 Sub Drop', color: 'from-red-600 to-amber-800', key: 'F' },
+const TABS = [
+  { id: 'gtacruiser',   label: 'GTA MK City 3D',   icon: Car,      desc: 'Juego 3D inmersivo tipo GTA recorriendo Monterrey con radio de beats' },
+  { id: 'spectrogram',  label: 'Espectrograma 3D', icon: Mic,      desc: 'Visualizador de audio 3D en tiempo real' },
+  { id: 'piano',        label: 'Piano Virtual',    icon: Music2,   desc: 'Toca piano con teclado físico o táctil' },
+  { id: 'pacman',       label: 'PacMan MK',        icon: Gamepad2, desc: 'Pacman retro con el logo oficial de Monteking' },
 ];
 
-export default function Game() {
-  const [activePad, setActivePad] = useState(null);
-
-  const triggerPad = (pad) => {
-    setActivePad(pad.id);
-    setTimeout(() => setActivePad(null), 150);
-
-    // Audio synth feedback via Web Audio API
-    try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = pad.id % 2 === 0 ? 'square' : 'sine';
-      osc.frequency.setValueAtTime(pad.id * 60 + 80, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.15);
-
-      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.15);
-    } catch (e) {
-      console.log(e);
-    }
-  };
+export default function GamePage() {
+  const [activeTab, setActiveTab] = useState('gtacruiser');
 
   return (
-    <div className="min-h-screen bg-obsidian-dark pt-28 pb-20 px-4">
-      <div className="max-w-4xl mx-auto text-center">
+    <div className="min-h-screen py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         
-        {/* Header */}
-        <div className="mb-12">
-          <span className="text-xs font-mono font-bold tracking-widest text-gold uppercase mb-2 block">
-            INTERACTIVO & BEATMAKING
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-10"
+        >
+          <span className="text-yellow-400 uppercase tracking-[0.3em] text-xs font-bold font-mono">
+            Arcade & Sound Lab 13-11
           </span>
-          <h1 className="font-cinzel font-black text-4xl sm:text-6xl text-white">
-            BEATMAKER <span className="text-gold-gradient">13-11</span>
+          <h1 className="font-pirata text-4xl md:text-7xl font-black text-white mt-3 mb-4 tracking-wider">
+            MONTEKING <span className="text-stroke-gold">GAMES 3D</span>
           </h1>
-          <p className="text-sm text-gray-400 mt-3 max-w-lg mx-auto">
-            Experimenta el ritmo. Presiona las almohadillas o usa las teclas (Q, W, E, R, A, S, D, F) para disparar sonidos.
+          <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto font-sans">
+            Juegos inmersivos tridimensionales, emuladores y herramientas audiovisuales con banda sonora oficial.
           </p>
+        </motion.div>
+
+        {/* Tab Selector */}
+        <div className="flex flex-wrap gap-3 justify-center mb-10">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2.5 px-6 py-3.5 rounded-2xl font-bold font-oswald text-sm tracking-wide transition-all border ${
+                activeTab === tab.id
+                  ? 'bg-gradient-to-r from-yellow-400 via-amber-300 to-yellow-500 border-yellow-200 text-black shadow-xl shadow-yellow-500/30 scale-105'
+                  : 'bg-zinc-950/80 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-white'
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              {tab.label}
+            </button>
+          ))}
         </div>
 
-        {/* MPC Drum Pad Grid */}
-        <div className="glass-card rounded-3xl p-8 border border-gold/30 shadow-gold-intense max-w-2xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {PADS.map((pad) => {
-              const isActive = activePad === pad.id;
-              return (
-                <motion.button
-                  key={pad.id}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => triggerPad(pad)}
-                  className={`aspect-square rounded-2xl p-4 flex flex-col justify-between items-start font-mono font-bold transition-all duration-100 border ${
-                    isActive
-                      ? 'bg-gradient-to-br from-gold-light via-gold to-gold-dark text-obsidian-dark border-gold shadow-gold-glow scale-105'
-                      : 'bg-obsidian-dark/80 text-white border-gold/20 hover:border-gold/60 hover:bg-gold/10'
-                  }`}
-                >
-                  <span className="text-xs px-2 py-0.5 rounded-md bg-black/40 text-gold font-mono">
-                    [{pad.key}]
-                  </span>
-                  <span className="text-xs font-sans text-left leading-tight">
-                    {pad.name}
-                  </span>
-                </motion.button>
-              );
-            })}
-          </div>
+        {/* Game Content */}
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {activeTab === 'gtacruiser' && (
+            <div>
+              <div className="text-center mb-6">
+                <p className="text-zinc-400 text-sm max-w-xl mx-auto">
+                  Conduce por la autopista nocturna de Monterrey en tu deportivo 13-11. Sintoniza las estaciones de radio de Monteking y esquiva a la policía mientras recoges monedas doradas.
+                </p>
+              </div>
+              <GTAMKCityCruiser />
+            </div>
+          )}
 
-          <div className="mt-8 pt-6 border-t border-gold/20 flex items-center justify-between text-xs text-gray-400">
-            <span className="flex items-center gap-1.5">
-              <Gamepad2 className="w-4 h-4 text-gold" />
-              Sintetizador Web Audio En Vivo
-            </span>
-            <span className="font-mono text-gold font-bold">140 BPM STANDBY</span>
-          </div>
-        </div>
+          {activeTab === 'spectrogram' && (
+            <div>
+              <div className="text-center mb-6">
+                <p className="text-zinc-400 text-sm">Visualizador de audio 3D en tiempo real usando Web Audio API.</p>
+              </div>
+              <AudioSpectrogram />
+            </div>
+          )}
+
+          {activeTab === 'piano' && (
+            <div>
+              <div className="text-center mb-6">
+                <p className="text-zinc-400 text-sm">Piano virtual con osciladores y filtros en tiempo real.</p>
+              </div>
+              <VirtualPiano />
+            </div>
+          )}
+
+          {activeTab === 'pacman' && (
+            <div className="flex flex-col items-center">
+              <div className="text-center mb-6">
+                <p className="text-zinc-400 text-sm">PacMan edición Monteking 13-11. Usa las flechas del teclado o controles táctiles.</p>
+              </div>
+              <PacManGame />
+            </div>
+          )}
+        </motion.div>
 
       </div>
     </div>
