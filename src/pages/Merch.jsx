@@ -167,7 +167,10 @@ export default function MerchPage() {
                       src={product.mockups[0]}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => { e.target.src = "assets/cover_trap.jpg"; }}
+                      onError={(e) => { 
+                        e.target.onerror = null; 
+                        e.target.style.display = 'none'; 
+                      }}
                     />
                     {/* Badges overlay */}
                     <div className="absolute top-3 left-3">
@@ -342,7 +345,10 @@ export default function MerchPage() {
                     src={selectedProduct.mockups[mockupIndex]}
                     alt={selectedProduct.name}
                     className="w-full h-full object-cover"
-                    onError={(e) => { e.target.src = "assets/cover_trap.jpg"; }}
+                    onError={(e) => { 
+                      e.target.onerror = null; 
+                      e.target.style.display = 'none'; 
+                    }}
                   />
                 </div>
                 {/* Mockup thumbnail switcher */}
