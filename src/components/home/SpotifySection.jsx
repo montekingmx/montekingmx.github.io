@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 export default function SpotifySection() {
   const { currentTrack, isPlaying, playTrack, togglePlayPause, seek, currentTime, setPlaybackRate, audioRef } = useAudio();
   const [selectedTrackIdx, setSelectedTrackIdx] = useState(0);
-  const [rpmMode, setRpmMode] = useState('33'); // '33' (Normal 1.0x) or '45' (Rebajada 0.82x)
+  const [rpmMode, setRpmMode] = useState('45'); // '45' (Normal 1.0x) or '33' (Rebajada 0.82x)
   const [isScratching, setIsScratching] = useState(false);
   const [rotationAngle, setRotationAngle] = useState(0);
   
@@ -23,11 +23,11 @@ export default function SpotifySection() {
   // Apply RPM speed & rebajada pitch
   const handleSetRpm = (mode) => {
     setRpmMode(mode);
-    if (mode === '45') {
+    if (mode === '33') {
       // Rebajada mode: Slowed down to 0.82x with deep pitch
       setPlaybackRate(0.82);
     } else {
-      // Normal mode: 1.0x
+      // Normal mode: 45 RPM = velocidad y tono estándar (1.0x)
       setPlaybackRate(1.0);
     }
   };
@@ -148,22 +148,22 @@ export default function SpotifySection() {
               {/* 33 RPM (Normal) vs 45 RPM (Rebajada) Selector */}
               <div className="flex items-center gap-1.5 bg-black/90 p-1 rounded-xl border border-zinc-800 text-xs font-mono">
                 <button
-                  onClick={() => handleSetRpm('33')}
+                  onClick={() => handleSetRpm('45')}
                   className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                    rpmMode === '33' ? 'bg-yellow-400 text-black shadow-md' : 'text-zinc-400 hover:text-white'
+                    rpmMode === '45' ? 'bg-yellow-400 text-black shadow-md' : 'text-zinc-400 hover:text-white'
                   }`}
                   title="Velocidad normal (1.0x)"
                 >
-                  33 RPM (NORMAL)
+                  45 RPM (NORMAL)
                 </button>
                 <button
-                  onClick={() => handleSetRpm('45')}
+                  onClick={() => handleSetRpm('33')}
                   className={`px-3 py-1 rounded-lg font-bold transition-all ${
-                    rpmMode === '45' ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-md' : 'text-zinc-400 hover:text-white'
+                    rpmMode === '33' ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-md' : 'text-zinc-400 hover:text-white'
                   }`}
                   title="Modo Rebajada (0.82x Slowed & Pitch)"
                 >
-                  45 RPM (REBAJADA)
+                  33 RPM (REBAJADA)
                 </button>
               </div>
             </div>
