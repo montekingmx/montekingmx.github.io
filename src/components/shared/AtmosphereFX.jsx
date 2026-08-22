@@ -266,36 +266,30 @@ export default function AtmosphereFX() {
 
   return (
     <>
-      {/* ── Fixed Global Background Layers ── */}
-      <div className="fixed inset-0 pointer-events-none z-[-10] overflow-hidden">
+      {/* ── Fixed Global Background Layers (Crocodile Texture 100% Visible) ── */}
+      <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
         
-        {/* Layer 1: Real Crocodile Texture - Crisply visible */}
+        {/* Layer 1: Real Crocodile Texture - Full contrast and 100% crisp visibility */}
         <div
           id="global-bg-texture"
-          className="absolute inset-0 bg-cover bg-center will-change-transform"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat will-change-transform"
           style={{
             backgroundImage: "url('assets/crocodile_texture.jpg')",
-            opacity: 0.94,
-            filter: "brightness(0.82) contrast(1.25)",
+            opacity: 0.95,
+            filter: "brightness(0.75) contrast(1.3)",
           }}
         />
 
-        {/* Layer 2: Subtle Ambient Tint */}
+        {/* Layer 2: Subtle Luxury Vignette & Dark Tint */}
         <div
-          className="absolute inset-0 transition-colors duration-700 ease-in-out"
+          className="absolute inset-0"
           style={{
-            backgroundColor: "rgba(10, 8, 4, 0.45)",
+            background: "radial-gradient(circle at 50% 25%, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.75) 100%)",
           }}
         />
 
-        {/* Layer 3: Ultra-Fast Lightweight ASCII Matrix */}
-        <AsciiBackground />
-
-        {/* Layer 4: Floating Elements - ONE LAYER DIRECTLY ABOVE Crocodile Texture! */}
+        {/* Layer 3: Floating Elements - Directly over Crocodile Texture */}
         <InfiniteFloatingElements />
-
-        {/* Layer 5: Non-stop Golden Embers */}
-        <canvas ref={canvasSparksRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-75" />
       </div>
 
       {/* ── Golden Comet (Cometa Dorado) Cursor Canvas (Desktop Only) ── */}

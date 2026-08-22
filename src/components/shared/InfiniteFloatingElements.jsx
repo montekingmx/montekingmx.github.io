@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
-// Curated collection of user images matching:
-// mk, global, represent, whisk, 13-11, ahn35eahn35eahn3, ChatGPT 3 mar 2026, B4A87904, BD31866D, 8cb8f89d, FOTOS A VECES ME HAGO EL MUERTO, WALLPAPERS MK 13-11
+// Curated user images (optimized, compressed web assets)
 const IMAGE_POOLS = [
   // Slot 1 (Top Left)
   [
@@ -56,73 +54,55 @@ const IMAGE_POOLS = [
 ];
 
 const CARD_SLOTS = [
-  { id: "slot-1", style: "top-[10%] left-[2%] w-44 sm:w-56 lg:w-72 rotate-[-4deg]" },
-  { id: "slot-2", style: "top-[25%] right-[2%] w-48 sm:w-60 lg:w-76 rotate-[5deg]" },
-  { id: "slot-3", style: "top-[46%] left-[3%] w-44 sm:w-56 lg:w-68 rotate-[3deg]" },
-  { id: "slot-4", style: "top-[64%] right-[3%] w-48 sm:w-60 lg:w-72 rotate-[-4deg]" },
-  { id: "slot-5", style: "top-[38%] left-[5%] w-40 sm:w-52 lg:w-64 rotate-[-6deg]" },
-  { id: "slot-6", style: "top-[18%] right-[5%] w-44 sm:w-56 lg:w-68 rotate-[6deg]" },
-  { id: "slot-7", style: "top-[82%] left-[18%] w-52 sm:w-64 lg:w-76 rotate-[2deg]" },
+  { id: "slot-1", style: "top-[8%] left-[2%] w-44 sm:w-56 lg:w-72", anim: "animate-float-1" },
+  { id: "slot-2", style: "top-[20%] right-[2%] w-48 sm:w-60 lg:w-76", anim: "animate-float-2" },
+  { id: "slot-3", style: "top-[42%] left-[3%] w-44 sm:w-56 lg:w-68", anim: "animate-float-3" },
+  { id: "slot-4", style: "top-[60%] right-[3%] w-48 sm:w-60 lg:w-72", anim: "animate-float-1" },
+  { id: "slot-5", style: "top-[78%] left-[5%] w-40 sm:w-52 lg:w-64", anim: "animate-float-2" },
+  { id: "slot-6", style: "top-[85%] right-[5%] w-44 sm:w-56 lg:w-68", anim: "animate-float-3" },
 ];
 
 export default function InfiniteFloatingElements() {
   const [cycleIndex, setCycleIndex] = useState(0);
 
-  // Smoothly alternate images every 12 seconds
+  // Smooth image alternation every 14 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCycleIndex((prev) => prev + 1);
-    }, 12000);
+    }, 14000);
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[-5] overflow-hidden">
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
       {CARD_SLOTS.map((slot, index) => {
         const pool = IMAGE_POOLS[index % IMAGE_POOLS.length];
         const currentSrc = pool[cycleIndex % pool.length];
 
         return (
-          <motion.div
+          <div
             key={slot.id}
-            className={`absolute ${slot.style} rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_15px_45px_rgba(0,0,0,0.9)] border-2 border-yellow-500/50 bg-zinc-950/80 backdrop-blur-md opacity-75 hover:opacity-100 transition-opacity duration-300 pointer-events-auto cursor-pointer group`}
-            animate={{
-              y: [0, -25, 0, 25, 0],
-              x: [0, 15, 0, -15, 0],
-              rotate: [0, 2.5, -2.5, 1.5, 0],
-              scale: [1, 1.03, 0.98, 1.02, 1]
-            }}
-            transition={{
-              duration: 14 + index * 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: index * 1.1
-            }}
-            whileHover={{ scale: 1.12, zIndex: 30 }}
+            className={`absolute ${slot.style} ${slot.anim} rounded-2xl overflow-hidden shadow-2xl border border-yellow-500/40 bg-zinc-950/85 opacity-70 hover:opacity-100 transition-opacity duration-300 pointer-events-auto cursor-pointer will-change-transform`}
           >
             <div className="relative aspect-video w-full h-full">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={currentSrc}
-                  src={currentSrc}
-                  alt=""
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1.2, ease: "easeInOut" }}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 filter brightness-95 contrast-110"
-                  onError={(e) => { e.target.style.display = 'none'; }}
-                />
-              </AnimatePresence>
-
-              {/* Ambient Gold Sheen Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-yellow-400/80 shadow-[0_0_8px_#FFD700]" />
+              <img
+                src={currentSrc}
+                alt=""
+                loading="lazy"
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105 filter brightness-90 contrast-110"
+                onError={(e) => { 
+                  e.target.onerror = null; 
+                  e.target.style.display = 'none'; 
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-yellow-400/80 shadow-[0_0_6px_#FFD700]" />
             </div>
-          </motion.div>
+          </div>
         );
       })}
     </div>
   );
 }
+
 
