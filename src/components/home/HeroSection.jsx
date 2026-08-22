@@ -7,7 +7,7 @@ import { createPageUrl } from '@/utils';
 
 const IMAGES = {
   wallpaper: "assets/branding/monteking_con_textura.png",
-  logo: "assets/branding/mk_logo_color.png",
+  logo: "assets/logo_1.png",
   title: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_6947f4b3e4453a62be1b6258/14ca8c5db_STICKERTITULOMONEDAALAIRE.png",
   coinFront: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6947f57d0fff82c786d5c45d/a75fec195_13-11MONEDADISENO1.png",
   coinBack: "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6947f57d0fff82c786d5c45d/b84b3cca8_1311MONEDABACKDISENO-Recuperado-Recuperado-Recuperado.png"
