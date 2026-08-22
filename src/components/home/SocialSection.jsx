@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Instagram, Youtube, ExternalLink, Heart, MessageCircle, Share2, Play, Disc3, CheckCircle2, Film, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Instagram, Youtube, ExternalLink, Play, Film, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 // Real Instagram Posts & Reels provided by user
@@ -19,11 +19,12 @@ const REAL_INSTAGRAM_PROFILES = [
       embedUrl: "https://www.instagram.com/reel/DNuJTMhWCq9/embed",
       title: "Casila OG — Último Reel Oficial",
       caption: "201XCIENTO y más novedades en el estudio. Mira el reel oficial en Instagram.",
-      tag: "ÚLTIMO REEL REAL"
+      tag: "ÚLTIMO REEL REAL",
+      previewImg: "assets/bg_elements/Gemini_Generated_Image_ahn35eahn35eahn3.png"
     },
     reels: [
-      { id: "DbeJkkNurg1", url: "https://www.instagram.com/reel/DbeJkkNurg1/", title: "Casila OG — Reel Sesión #2", type: "reel" },
-      { id: "DXxug0iRbGc", url: "https://www.instagram.com/reel/DXxug0iRbGc/", title: "Casila OG — Reel Freestyle #3", type: "reel" }
+      { id: "DbeJkkNurg1", url: "https://www.instagram.com/reel/DbeJkkNurg1/", title: "Casila OG — Reel Sesión #2", type: "reel", previewImg: "assets/bg_elements/Whisk_058422086d1069aa42e45c9c492796cddr.png" },
+      { id: "DXxug0iRbGc", url: "https://www.instagram.com/reel/DXxug0iRbGc/", title: "Casila OG — Reel Freestyle #3", type: "reel", previewImg: "assets/bg_elements/Whisk_1050872ab80877fb2de4c716aa3d777bdr.png" }
     ]
   },
   {
@@ -40,11 +41,12 @@ const REAL_INSTAGRAM_PROFILES = [
       embedUrl: "https://www.instagram.com/reel/DUPQeqZjJ-L/embed",
       title: "Monteking MX — Beatmaking & Drops",
       caption: "Nuevo drop y producción musical desde el estudio central 13-11.",
-      tag: "ÚLTIMO REEL REAL"
+      tag: "ÚLTIMO REEL REAL",
+      previewImg: "assets/bg_elements/ChatGPT_Image_3_mar_2026_04_25_26.png"
     },
     reels: [
-      { id: "DUHQVj1kYtk", url: "https://www.instagram.com/reel/DUHQVj1kYtk/", title: "Monteking MX — Reel Beat Session", type: "reel" },
-      { id: "DOhMKMjkm63", url: "https://www.instagram.com/reel/DOhMKMjkm63/", title: "Monteking MX — Reel Studio Cut", type: "reel" }
+      { id: "DUHQVj1kYtk", url: "https://www.instagram.com/reel/DUHQVj1kYtk/", title: "Monteking MX — Reel Beat Session", type: "reel", previewImg: "assets/bg_elements/MK_GLOBAL_SELLO.png" },
+      { id: "DOhMKMjkm63", url: "https://www.instagram.com/reel/DOhMKMjkm63/", title: "Monteking MX — Reel Studio Cut", type: "reel", previewImg: "assets/bg_elements/Whisk_06c2bf3e4405a3d9b44414179cd89b1ddr.png" }
     ]
   },
   {
@@ -61,11 +63,12 @@ const REAL_INSTAGRAM_PROFILES = [
       embedUrl: "https://www.instagram.com/p/CnxMf0KvJVH/embed",
       title: "Monteking Records — Publicación Oficial",
       caption: "Sesión de estudio y lanzamientos discográficos oficiales.",
-      tag: "ÚLTIMO POST REAL"
+      tag: "ÚLTIMO POST REAL",
+      previewImg: "assets/bg_elements/B4A87904-14A8-464B-BE0F-9381ED6DEACE.PNG"
     },
     reels: [
-      { id: "CgpXnaxJYgw", url: "https://www.instagram.com/p/CgpXnaxJYgw/", title: "Monteking Records — Post Oficial #2", type: "post" },
-      { id: "CSnkoSBFb0I", url: "https://www.instagram.com/p/CSnkoSBFb0I/", title: "Monteking Records — Post Oficial #3", type: "post" }
+      { id: "CgpXnaxJYgw", url: "https://www.instagram.com/p/CgpXnaxJYgw/", title: "Monteking Records — Post Oficial #2", type: "post", previewImg: "assets/bg_elements/represents_amarillos.png" },
+      { id: "CSnkoSBFb0I", url: "https://www.instagram.com/p/CSnkoSBFb0I/", title: "Monteking Records — Post Oficial #3", type: "post", previewImg: "assets/bg_elements/BD31866D-B72A-44DF-AC62-7DB574A82055.JPEG" }
     ]
   }
 ];
@@ -73,16 +76,13 @@ const REAL_INSTAGRAM_PROFILES = [
 export default function SocialSection() {
   const [activeAccount, setActiveAccount] = useState(0);
 
-  // Load Instagram embed script
+  // Trigger Instagram embed processing if available
   useEffect(() => {
-    if (window.instgrm) {
-      window.instgrm.Embeds.process();
-    } else {
-      const script = document.createElement('script');
-      script.src = "//www.instagram.com/embed.js";
-      script.async = true;
-      document.body.appendChild(script);
-    }
+    try {
+      if (window.instgrm) {
+        window.instgrm.Embeds.process();
+      }
+    } catch (e) {}
   }, [activeAccount]);
 
   const account = REAL_INSTAGRAM_PROFILES[activeAccount];
@@ -102,10 +102,10 @@ export default function SocialSection() {
             <Instagram className="w-3.5 h-3.5" /> ACTIVIDAD OFICIAL & REELS EN VIVO
           </div>
           <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider">
-            POSTS & REELS <span className="text-stroke-gold">REALES</span>
+            POSTS & REELS <span className="text-stroke-gold">OFICIALES</span>
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto mt-2 font-sans">
-            Publicaciones y reels verificados en directo desde las cuentas oficiales de Instagram.
+            Feed en directo desde las cuentas oficiales de Instagram de Monteking MX y Casila OG.
           </p>
         </motion.div>
 
@@ -159,8 +159,8 @@ export default function SocialSection() {
           {/* Main Featured Real Post / Reel Embed */}
           <div className="lg:col-span-7 bg-zinc-950/90 rounded-3xl p-6 sm:p-8 border-2 border-yellow-500/30 shadow-2xl">
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-zinc-800">
-              <span className="text-xs font-mono font-bold text-yellow-400 uppercase">
-                {account.latestPost.tag}
+              <span className="text-xs font-mono font-bold text-yellow-400 uppercase flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" /> {account.latestPost.tag}
               </span>
               <a
                 href={account.latestPost.url}
@@ -172,11 +172,12 @@ export default function SocialSection() {
               </a>
             </div>
 
-            {/* Instagram Iframe / Embed Container */}
-            <div className="rounded-2xl overflow-hidden bg-black border border-zinc-800 shadow-2xl flex justify-center min-h-[480px]">
+            {/* Instagram Iframe Container */}
+            <div className="rounded-2xl overflow-hidden bg-black border border-zinc-800 shadow-2xl min-h-[480px] relative">
               <iframe
                 src={account.latestPost.embedUrl}
-                className="w-full h-[520px] sm:h-[580px] border-0"
+                className="w-full h-[540px] sm:h-[600px] border-0"
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                 allowFullScreen
                 loading="lazy"
                 title={account.latestPost.title}
@@ -189,7 +190,7 @@ export default function SocialSection() {
             <div className="flex items-center gap-2">
               <Film className="w-5 h-5 text-yellow-400" />
               <h3 className="text-white font-oswald font-bold text-lg uppercase tracking-wide">
-                Más Publicaciones & Reels Reales
+                Más Publicaciones & Reels
               </h3>
             </div>
 
@@ -212,7 +213,8 @@ export default function SocialSection() {
                 <div className="rounded-xl overflow-hidden bg-black border border-zinc-800 mb-3">
                   <iframe
                     src={`https://www.instagram.com/${item.type === 'reel' ? 'reel' : 'p'}/${item.id}/embed`}
-                    className="w-full h-[320px] border-0"
+                    className="w-full h-[340px] border-0"
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                     allowFullScreen
                     loading="lazy"
                     title={item.title}

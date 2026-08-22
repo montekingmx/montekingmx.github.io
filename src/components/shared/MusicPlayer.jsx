@@ -51,58 +51,123 @@ export default function MusicPlayer() {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const coverArt = currentTrack?.cover || 'assets/cover_trap.jpg';
 
-  // Fluid Glowing Neon Wave / Curves Visualizer (Item 2)
+  // Ultra-Reactive Spectrum Visualizer (Broadband 64-Band EQ + Peak Drops + Glowing Harmonic Waves)
   useEffect(() => {
     if (!canvasRef.current || isPlayerMinimized) return;
     let animId;
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     let phase = 0;
+
+    // Peak levels for gravity drop effect
+    const numBars = 64;
+    const peaks = new Float32Array(numBars);
 
     const draw = () => {
       animId = requestAnimationFrame(draw);
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      
+      const dpr = window.devicePixelRatio || 1;
+      const displayWidth = canvas.offsetWidth;
+      const displayHeight = canvas.offsetHeight;
+
+      if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+      }
 
       const w = canvas.width;
       const h = canvas.height;
-      const midY = h / 2;
+      if (w === 0 || h === 0) return;
 
       ctx.clearRect(0, 0, w, h);
 
-      // Get real audio data or smooth procedural wave when playing
-      let freqFactor = 0;
+      let freqData = null;
+      let totalEnergy = 0;
+
       if (analyser && isPlaying) {
         const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        analyser.getByteFrequencyData(dataArray);
-        let sum = 0;
-        for (let i = 0; i < 32; i++) sum += dataArray[i];
-        freqFactor = (sum / 32) / 255;
+        freqData = new Uint8Array(bufferLength);
+        analyser.getByteFrequencyData(freqData);
+
+        for (let i = 0; i < Math.min(64, bufferLength); i++) {
+          totalEnergy += freqData[i];
+        }
+        totalEnergy = totalEnergy / (64 * 255);
       }
 
-      const amp = isPlaying ? Math.max(8, freqFactor * (h * 0.45) + 6) : 2;
-      phase += isPlaying ? 0.08 : 0.02;
+      phase += isPlaying ? 0.06 + totalEnergy * 0.1 : 0.015;
 
-      // Draw 3 Overlapping Harmonic Glowing Wave Curves
+      // ── 1. Draw 64 Frequency Spectrum Equalizer Bars ──
+      const barWidth = Math.max(2, (w / numBars) - 1.5);
+      const step = w / numBars;
+
+      for (let i = 0; i < numBars; i++) {
+        let val = 0;
+        if (freqData) {
+          // Logarithmic distribution to capture rich bass, punchy mids and shimmering highs
+          const logIdx = Math.floor(Math.pow(i / numBars, 1.35) * (freqData.length * 0.85));
+          val = (freqData[Math.min(logIdx, freqData.length - 1)] || 0) / 255;
+          // Add extra punch to sub/bass and upper range
+          if (i < 12) val *= 1.25;
+          else if (i > 40) val *= 1.35;
+          val = Math.min(1, val);
+        } else if (isPlaying) {
+          // Fallback procedural dance when playing without analyser hookup
+          val = 0.2 + Math.sin(phase * 2 + i * 0.2) * 0.2 + Math.cos(phase * 3 + i * 0.4) * 0.15;
+        } else {
+          // Gentle resting pulse
+          val = 0.05 + Math.sin(phase + i * 0.1) * 0.04;
+        }
+
+        const barHeight = Math.max(2, val * (h * 0.85));
+
+        // Peak drop decay
+        if (barHeight > peaks[i]) {
+          peaks[i] = barHeight;
+        } else {
+          peaks[i] = Math.max(2, peaks[i] - 1.2);
+        }
+
+        const x = i * step + (step - barWidth) / 2;
+        const y = h - barHeight;
+
+        // Gradient for bars (Gold to Neon Amber)
+        const barGrad = ctx.createLinearGradient(0, y, 0, h);
+        barGrad.addColorStop(0, '#FFF275');
+        barGrad.addColorStop(0.3, '#FFD700');
+        barGrad.addColorStop(0.8, '#FF8C00');
+        barGrad.addColorStop(1, 'rgba(255, 69, 0, 0.4)');
+
+        ctx.fillStyle = barGrad;
+        ctx.fillRect(x, y, barWidth, barHeight);
+
+        // Peak Drop Cap
+        ctx.fillStyle = '#FFFFFF';
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = isPlaying ? 6 : 0;
+        ctx.fillRect(x, h - peaks[i] - 2, barWidth, 1.8);
+        ctx.shadowBlur = 0;
+      }
+
+      // ── 2. Draw Reactive Glowing Harmonic Waveform Overlay ──
+      const midY = h * 0.42;
+      const amp = isPlaying ? Math.max(6, totalEnergy * (h * 0.4) + 5) : 3;
+
       const waves = [
-        { color: 'rgba(255, 215, 0, 0.95)', shadow: '#FFD700', freq: 0.015, speed: 1, offset: 0, lineWidth: 2.5 },
-        { color: 'rgba(255, 140, 0, 0.75)', shadow: '#FF8C00', freq: 0.022, speed: -1.2, offset: Math.PI / 3, lineWidth: 2 },
-        { color: 'rgba(0, 229, 255, 0.65)', shadow: '#00E5FF', freq: 0.01, speed: 0.8, offset: Math.PI / 1.5, lineWidth: 1.5 },
+        { color: 'rgba(255, 215, 0, 0.9)', shadow: '#FFD700', freq: 0.012, speed: 1.2, offset: 0, lineWidth: 2 },
+        { color: 'rgba(0, 229, 255, 0.7)', shadow: '#00E5FF', freq: 0.02, speed: -1, offset: Math.PI / 3, lineWidth: 1.5 },
       ];
 
       waves.forEach((wv) => {
         ctx.strokeStyle = wv.color;
         ctx.shadowColor = wv.shadow;
-        ctx.shadowBlur = isPlaying ? 12 : 2;
+        ctx.shadowBlur = isPlaying ? 10 : 2;
         ctx.lineWidth = wv.lineWidth;
         ctx.beginPath();
 
-        for (let x = 0; x < w; x += 3) {
-          // Envelope: taper at the left & right edges
+        for (let x = 0; x <= w; x += 4) {
           const envelope = Math.sin((x / w) * Math.PI);
           const y = midY + Math.sin(x * wv.freq + phase * wv.speed + wv.offset) * (amp * envelope);
-
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -110,20 +175,12 @@ export default function MusicPlayer() {
         ctx.stroke();
         ctx.shadowBlur = 0;
       });
-
-      // Bottom glowing reflection fill
-      if (isPlaying) {
-        const fillGrad = ctx.createLinearGradient(0, midY, 0, h);
-        fillGrad.addColorStop(0, 'rgba(255, 215, 0, 0.12)');
-        fillGrad.addColorStop(1, 'transparent');
-        ctx.fillStyle = fillGrad;
-        ctx.fillRect(0, midY, w, h - midY);
-      }
     };
 
     draw();
     return () => cancelAnimationFrame(animId);
   }, [analyser, isPlaying, isPlayerMinimized]);
+
 
   // ── Minimized Floating Pill (FAB)
   if (isPlayerMinimized) {
