@@ -70,7 +70,10 @@ export default function Layout({ children, currentPageName }) {
                   src={LOGO_URL}
                   alt="Monteking MX"
                   className="w-full h-full object-contain"
-                  onError={(e) => { e.target.src = "assets/preview.jpg"; }}
+                  onError={(e) => { 
+                    e.target.onerror = null; 
+                    e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23111'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23FFD700' font-family='sans-serif' font-weight='bold'%3EMK%3C/text%3E%3C/svg%3E"; 
+                  }}
                 />
               </div>
               <div className="hidden sm:block">
