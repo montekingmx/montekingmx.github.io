@@ -172,16 +172,16 @@ export default function MusicPage() {
           </div>
         </section>
 
-        {/* ── Bóveda de Sencillos & Inéditos de Casila OG (Item 12) ── */}
+        {/* ── Bóveda de Sencillos & Inéditos de Casila OG (Sin Cover Art) ── */}
         <section className="mb-16">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-1 h-6 rounded-full bg-amber-400" />
-            <h3 className="text-white font-black font-oswald text-xl uppercase tracking-wide">
-              Sencillos Oficiales & Inéditos de Casila OG
+            <h3 className="text-white font-black font-oswald text-xl uppercase tracking-wide cursor-default">
+              <span className="title-hover-gold">Sencillos Oficiales & Inéditos de Casila OG</span>
             </h3>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {CASILA_SINGLES_VAULT.map((single, idx) => {
               const playing = isPlaying && currentTrack?.id === `music-${single.id}`;
               return (
@@ -190,35 +190,44 @@ export default function MusicPage() {
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.06 }}
+                  transition={{ delay: idx * 0.05 }}
                   onClick={() => handlePlayTrack(single)}
-                  className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer border transition-all group ${
+                  className={`flex items-center justify-between p-4 rounded-2xl cursor-pointer border transition-all group ${
                     playing
                       ? 'bg-yellow-500/15 border-yellow-400 shadow-lg shadow-yellow-500/20'
-                      : 'bg-zinc-950/80 border-zinc-800 hover:border-yellow-500/40 hover:bg-zinc-900/60'
+                      : 'bg-zinc-950/85 border-zinc-800 hover:border-yellow-500/40 hover:bg-zinc-900/70'
                   }`}
                 >
-                  <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-zinc-900 shrink-0 border border-zinc-800">
-                    <img src={single.cover} alt={single.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                    {playing && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <Pause className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                    {/* Index & Audio Wave Indicator */}
+                    <div className="w-10 h-10 rounded-xl bg-zinc-900/90 border border-zinc-800 flex items-center justify-center shrink-0 group-hover:border-yellow-500/50 transition-colors">
+                      {playing ? (
+                        <Disc3 className="w-5 h-5 text-yellow-400 animate-spin" />
+                      ) : (
+                        <span className="text-xs font-mono font-bold text-yellow-400/80">#{idx + 1}</span>
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className={`font-bold text-sm truncate ${playing ? 'text-yellow-400' : 'text-white group-hover:text-yellow-400 transition-colors'}`}>
+                        {single.title}
+                      </p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-zinc-400 text-xs truncate">{single.artist}</span>
+                        <span className="text-zinc-600 text-[10px] font-mono">• {single.year}</span>
                       </div>
-                    )}
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className={`font-bold text-sm truncate ${playing ? 'text-yellow-400' : 'text-white group-hover:text-yellow-400 transition-colors'}`}>
-                      {single.title}
-                    </p>
-                    <p className="text-zinc-400 text-xs">{single.artist}</p>
-                    <span className="text-[10px] font-mono text-zinc-500">{single.year} • {single.duration}</span>
-                  </div>
-                  <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                    playing
-                      ? 'border-yellow-400 bg-yellow-400 text-black'
-                      : 'border-zinc-700 text-zinc-400 group-hover:border-yellow-400 group-hover:text-yellow-400'
-                  }`}>
-                    {playing ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />}
+
+                  <div className="flex items-center gap-3 shrink-0 ml-3">
+                    <span className="text-xs font-mono text-zinc-500">{single.duration}</span>
+                    <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
+                      playing
+                        ? 'border-yellow-400 bg-yellow-400 text-black'
+                        : 'border-zinc-700 text-zinc-400 group-hover:border-yellow-400 group-hover:text-yellow-400'
+                    }`}>
+                      {playing ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />}
+                    </div>
                   </div>
                 </motion.div>
               );
@@ -226,14 +235,16 @@ export default function MusicPage() {
           </div>
         </section>
 
-        {/* ── Monteking Top Hits ── */}
+        {/* ── Top Producciones Monteking Records (Videos más vistos en YouTube) ── */}
         <section>
           <div className="flex items-center gap-3 mb-5">
             <div className="w-1 h-6 rounded-full bg-yellow-500" />
-            <h3 className="text-white font-black font-oswald text-xl uppercase tracking-wide">Top Producciones Monteking Records</h3>
+            <h3 className="text-white font-black font-oswald text-xl uppercase tracking-wide cursor-default">
+              <span className="title-hover-gold">Top Producciones & Hits Más Vistos</span>
+            </h3>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {MONTEKING_HITS.map((hit, idx) => {
               const playing = isPlaying && currentTrack?.id === `music-${hit.id}`;
               return (
@@ -242,35 +253,37 @@ export default function MusicPage() {
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.06 }}
+                  transition={{ delay: idx * 0.05 }}
                   onClick={() => handlePlayTrack(hit)}
-                  className={`flex items-center gap-4 p-4 rounded-2xl cursor-pointer border transition-all group ${
+                  className={`p-4 rounded-2xl cursor-pointer border transition-all flex flex-col justify-between group ${
                     playing
-                      ? 'bg-yellow-500/10 border-yellow-500/40'
-                      : 'bg-zinc-950/80 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/60'
+                      ? 'bg-yellow-500/15 border-yellow-500/50 shadow-lg shadow-yellow-500/10'
+                      : 'bg-zinc-950/85 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-900/60'
                   }`}
                 >
-                  <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-zinc-900 shrink-0">
-                    <img src={hit.cover || 'assets/cover_trap.jpg'} alt={hit.title} className="w-full h-full object-cover" />
-                    {playing && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <Pause className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      </div>
-                    )}
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-red-950/60 border border-red-500/40 text-red-400 text-[10px] font-mono font-bold tracking-wider">
+                      ▶ {hit.views} VIEWS
+                    </span>
+                    <span className="text-[11px] font-mono text-zinc-500">{hit.duration}</span>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className={`font-bold text-sm truncate ${playing ? 'text-yellow-400' : 'text-white group-hover:text-yellow-400 transition-colors'}`}>
+
+                  <div>
+                    <p className={`font-bold text-sm truncate mb-0.5 ${playing ? 'text-yellow-400' : 'text-white group-hover:text-yellow-400 transition-colors'}`}>
                       {hit.title}
                     </p>
-                    <p className="text-zinc-400 text-xs">{hit.artist}</p>
-                    <p className="text-zinc-600 text-[10px] font-mono">{hit.duration}</p>
+                    <p className="text-zinc-400 text-xs truncate mb-3">{hit.artist}</p>
                   </div>
-                  <div className={`w-8 h-8 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                    playing
-                      ? 'border-yellow-400 bg-yellow-500/20 text-yellow-400'
-                      : 'border-zinc-700 text-zinc-500 group-hover:border-yellow-400 group-hover:text-yellow-400'
-                  }`}>
-                    {playing ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />}
+
+                  <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-yellow-400/80 font-bold uppercase">PROD. MONTEKING</span>
+                    <div className={`w-7 h-7 rounded-full border flex items-center justify-center transition-all ${
+                      playing
+                        ? 'border-yellow-400 bg-yellow-400 text-black'
+                        : 'border-zinc-700 text-zinc-400 group-hover:border-yellow-400 group-hover:text-yellow-400'
+                    }`}>
+                      {playing ? <Pause className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 ml-0.5 fill-current" />}
+                    </div>
                   </div>
                 </motion.div>
               );

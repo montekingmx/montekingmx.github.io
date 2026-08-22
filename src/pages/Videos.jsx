@@ -28,45 +28,55 @@ const VIDEOS = [
   { id: 15, title: "EN CALILI // #CYPHERKING #1", artist: "Casila OG",        videoId: "70GXxWRBlMo", thumbnail: yt("70GXxWRBlMo","hqdefault"), type: "collab" },
 ];
 
-// YouTube Official Playlists from @MONTEKINGMX (Item 13)
+// YouTube Official Playlists from @MONTEKINGMX
 const YOUTUBE_PLAYLISTS = [
   {
     id: "pl-1",
-    title: "MONEDA AL AIRE — ÁLBUM COMPLETO",
+    title: "Moneda Al Aire - Album",
     desc: "Todos los videoclips oficiales, visualizers y audios del álbum debut de Casila OG.",
     playlistId: "PL_MONEDA_AL_AIRE_CASILA",
     videosCount: "14 videos",
     embedUrl: "https://www.youtube.com/embed/videoseries?list=PL_MONEDA_AL_AIRE_CASILA",
-    cover: "assets/cover_trap.jpg",
+    cover: "assets/branding/moneda_1311_textura.png",
     directUrl: "https://www.youtube.com/@MONTEKINGMX/playlists"
   },
   {
     id: "pl-2",
-    title: "BEATS & INSTRUMENTALES OFICIALES 13-11",
-    desc: "Catálogo completo de instrumentales en Trap Memphis, Boombap 90s, Suave y Techno MK.",
-    playlistId: "PL_MK_BEATS_CATALOG",
-    videosCount: "80+ beats",
-    embedUrl: "https://www.youtube.com/embed/videoseries?list=PL_MK_BEATS_CATALOG",
-    cover: "assets/cover_boombap.jpg",
+    title: "Videos Populares",
+    desc: "Los videoclips oficiales más reproducidos y virales del canal de Monteking MX.",
+    playlistId: "PL_VIDEOS_POPULARES_MK",
+    videosCount: "20+ videos",
+    embedUrl: "https://www.youtube.com/embed/videoseries?list=PL_VIDEOS_POPULARES_MK",
+    cover: "assets/cover_trap.jpg",
     directUrl: "https://www.youtube.com/@MONTEKINGMX/playlists"
   },
   {
     id: "pl-3",
-    title: "CYPHERKING & FREESTYLES MONTERREY",
-    desc: "Sesiones de estudio en vivo, barras underground y colaboraciones exclusivas.",
-    playlistId: "PL_CYPHERKING_SESSIONS",
-    videosCount: "12 sesiones",
-    embedUrl: "https://www.youtube.com/embed/videoseries?list=PL_CYPHERKING_SESSIONS",
+    title: "Big Bong Estilo Rebajado",
+    desc: "Tracks y colaboraciones en versión rebajada con tempo lento y bajos profundos.",
+    playlistId: "PL_BIG_BONG_REBAJADO",
+    videosCount: "10+ tracks",
+    embedUrl: "https://www.youtube.com/embed/videoseries?list=PL_BIG_BONG_REBAJADO",
     cover: "assets/cover_suave.jpg",
     directUrl: "https://www.youtube.com/@MONTEKINGMX/playlists"
   },
   {
     id: "pl-4",
-    title: "VIDEOCLIPS 4K & VISUALES",
-    desc: "Producciones cinematográficas dirigidas y editadas por Monteking Films.",
-    playlistId: "PL_VIDEOCLIPS_4K_MK",
+    title: "Monteking OneShots",
+    desc: "Sesiones de estudio exclusivas y freestyle cuts en plano secuencia directo.",
+    playlistId: "PL_MONTEKING_ONESHOTS",
+    videosCount: "15+ one-shots",
+    embedUrl: "https://www.youtube.com/embed/videoseries?list=PL_MONTEKING_ONESHOTS",
+    cover: "assets/cover_boombap.jpg",
+    directUrl: "https://www.youtube.com/@MONTEKINGMX/playlists"
+  },
+  {
+    id: "pl-5",
+    title: "Colaboraciones",
+    desc: "Producciones y featurings con artistas nacionales e internacionales del sello.",
+    playlistId: "PL_COLABORACIONES_MK",
     videosCount: "25+ clips",
-    embedUrl: "https://www.youtube.com/embed/videoseries?list=PL_VIDEOCLIPS_4K_MK",
+    embedUrl: "https://www.youtube.com/embed/videoseries?list=PL_COLABORACIONES_MK",
     cover: "assets/cover_techno.jpg",
     directUrl: "https://www.youtube.com/@MONTEKINGMX/playlists"
   }

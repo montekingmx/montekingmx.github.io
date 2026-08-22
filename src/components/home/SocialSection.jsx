@@ -24,7 +24,7 @@ const REAL_INSTAGRAM_PROFILES = [
     },
     reels: [
       { id: "DbeJkkNurg1", url: "https://www.instagram.com/reel/DbeJkkNurg1/", title: "Casila OG — Reel Sesión #2", type: "reel", previewImg: "assets/bg_elements/Whisk_058422086d1069aa42e45c9c492796cddr.png" },
-      { id: "DXxug0iRbGc", url: "https://www.instagram.com/reel/DXxug0iRbGc/", title: "Casila OG — Reel Freestyle #3", type: "reel", previewImg: "assets/bg_elements/Whisk_1050872ab80877fb2de4c716aa3d777bdr.png" }
+      { id: "DTJnLabEWbe", url: "https://www.instagram.com/reel/DTJnLabEWbe/", title: "Casila OG — Reel Oficial #3", type: "reel", previewImg: "assets/bg_elements/Whisk_1050872ab80877fb2de4c716aa3d777bdr.png" }
     ]
   },
   {

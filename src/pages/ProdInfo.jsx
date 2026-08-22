@@ -47,7 +47,7 @@ const SECTIONS = [
     title: 'Mastering Profesional',
     subtitle: 'El toque final',
     tips: [
-      { title: 'Estándar Monteking: -11 a -8 LUFS (+3 LUFS sobre lo convencional)', desc: 'En Monteking Records masterizamos a -11 y hasta -8 LUFS (+3 LUFS más fuerte que los estándares convencionales de streaming) para garantizar máxima pegada, presencia comercial y energía agresiva en clubs y bocinas de calle.' },
+      { title: 'Estándar Monteking: -8 a -5 LUFS (+3 LUFS sobre lo convencional)', desc: 'En Monteking Records masterizamos a -8 y hasta -5 LUFS (+3 LUFS más fuerte que los estándares convencionales de streaming) para garantizar máxima pegada, presencia comercial y energía agresiva en clubs y bocinas de calle.' },
       { title: 'Limiter de alta gama y True Peak', desc: 'Un limiter profesional (FabFilter Pro-L 2, Ozone Maximizer) con True Peak en -0.5 a -1dBTP evita distorsión inter-sample mientras mantiene la presión sonora al máximo.' },
       { title: 'Stereo widening estratégico', desc: 'Amplía frecuencias medias-altas (1kHz+) pero mantén el sub (por debajo de 100Hz) en mono. Las bocinas pequeñas no reproducen sub estéreo.' },
       { title: 'EQ de mastering: máximo ±3dB', desc: 'En mastering, cambios sutiles tienen gran impacto. Si necesitas más de 3dB, el problema está en la mezcla, no en el master.' },
@@ -82,12 +82,12 @@ const FREQ_DATA = [
 ];
 
 const LUFS_DATA = [
-  { platform: 'Spotify', lufs: -14, color: '#1DB954' },
-  { platform: 'YouTube', lufs: -13, color: '#FF0000' },
-  { platform: 'Apple Music', lufs: -16, color: '#FC3C44' },
-  { platform: 'SoundCloud', lufs: -14, color: '#FF7700' },
-  { platform: 'Tidal', lufs: -14, color: '#00FFFF' },
-  { platform: 'Amazon', lufs: -14, color: '#00A8E0' },
+  { platform: 'Spotify', lufs: -11, color: '#1DB954' },
+  { platform: 'YouTube', lufs: -10, color: '#FF0000' },
+  { platform: 'Apple Music', lufs: -13, color: '#FC3C44' },
+  { platform: 'SoundCloud', lufs: -11, color: '#FF7700' },
+  { platform: 'Tidal', lufs: -11, color: '#00FFFF' },
+  { platform: 'Amazon', lufs: -11, color: '#00A8E0' },
 ];
 
 function TipCard({ tip, i }) {

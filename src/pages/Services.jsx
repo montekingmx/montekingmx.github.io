@@ -21,57 +21,48 @@ const SERVICES = [
   {
     icon: Music,
     title: "Producción Musical & Beats",
-    description: "Beats originales, arreglos exclusivos y composición completa para tu álbum o sencillo.",
-    features: ["Beat Original Exclusivo", "Arreglos & Estructura", "Composición Pro", "Stems WAV 24-Bit"],
+    description: "Composición exclusiva en Logic Pro & Ableton Live, arreglos de vanguardia y diseño sonoro a medida para tu proyecto.",
+    features: ["Beat Original Exclusivo", "Arreglos & Estructura", "Diseño Sonoro en DAW Pro", "Stems WAV 24-Bit + MIDI"],
     price: "Desde $2,500 MXN",
     color: "yellow",
-    image: "assets/service_produccion.jpg"
+    image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=1000&q=80"
   },
   {
     icon: Headphones,
-    title: "Mezcla & Mastering (-8 LUFS)",
-    description: "Tratamiento acústico, ecualización quirúrgica y mastering con estándar de impacto de -8 LUFS.",
+    title: "Mezcla & Mastering Pro (-8 LUFS)",
+    description: "Tratamiento acústico, compresión analógica por stems y maximización quirúrgica a -8 LUFS con punch comercial agresivo.",
     features: ["Mezcla por Stems", "Mastering Competitivo (-8 LUFS)", "Revisiones Ilimitadas", "Entrega en 48 hrs"],
     price: "Desde $1,500 MXN",
     color: "purple",
-    image: "assets/service_mastering.jpg"
+    image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80"
   },
   {
     icon: Mic,
     title: "Grabación en Estudio Monterrey",
-    description: "Sesiones de grabación en cabina profesional insonorizada con preamps valvulares.",
-    features: ["Micrófono de Gama Alta", "Ingeniero de Sonido", "Asistencia de Vocals", "Presencial en MTY"],
+    description: "Cabina profesional insonorizada, micrófonos de condensador Neumann/Shure y preamps valvulares para tomas impecables.",
+    features: ["Micrófonos de Gama Alta", "Ingeniero de Sonido Incluido", "Coaching Vocal", "Presencial en Monterrey, NL"],
     price: "$800 MXN / hora",
     color: "blue",
-    image: "assets/service_grabacion.jpg"
+    image: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1000&q=80"
   },
   {
     icon: Radio,
     title: "Ghost Production & Beatmaking",
-    description: "Producción musical integral bajo tu autoría comercial y confidencialidad garantizada.",
-    features: ["100% Derechos & Regalías", "Acuerdo de Confidencialidad", "Track Completo Stems + MIDI", "Mezcla Incluida"],
+    description: "Producción musical integral bajo tu autoría comercial, con sesión multitrack completa y confidencialidad 100% garantizada.",
+    features: ["100% Derechos & Regalías", "Acuerdo de Confidencialidad", "Track Completo Stems + MIDI", "Mezcla & Master Incluido"],
     price: "Desde $5,000 MXN",
     color: "red",
-    image: "assets/service_ghost.jpg"
+    image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1000&q=80"
   },
   {
     icon: Film,
     title: "Dirección de Videoclips 4K",
-    description: "Producción audiovisual cinematográfica, edición, corrección de color y efectos visuales.",
-    features: ["Cámara 4K Cinema", "Dirección de Arte", "Edición & VFX", "Color Grading"],
+    description: "Producción cinematográfica integral, dirección de arte, cámaras cinema 4K, edición de ritmo rápido y color grading.",
+    features: ["Cámara 4K Cinema", "Dirección de Arte & Guion", "Edición & VFX", "Color Grading Cinemático"],
     price: "Desde $6,500 MXN",
     color: "pink",
-    image: "assets/service_videoclips.jpg"
-  },
-  {
-    icon: Globe,
-    title: "Distribución & Lanzamiento Global",
-    description: "Distribución a Spotify, Apple Music, TikTok y monetización en YouTube Content ID.",
-    features: ["Distribución Global", "Pitch a Playlists Oficiales", "ISRC & UPC Códigos", "Soporte 24/7"],
-    price: "Consultar Plan",
-    color: "green",
-    image: "assets/service_distribucion.jpg"
-  },
+    image: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1000&q=80"
+  }
 ];
 
 const colorClasses = {
@@ -80,7 +71,6 @@ const colorClasses = {
   blue: "border-blue-500/30 hover:border-blue-500/60 shadow-blue-500/10",
   red: "border-red-500/30 hover:border-red-500/60 shadow-red-500/10",
   pink: "border-pink-500/30 hover:border-pink-500/60 shadow-pink-500/10",
-  green: "border-green-500/30 hover:border-green-500/60 shadow-green-500/10",
 };
 
 export default function ServicesPage() {
