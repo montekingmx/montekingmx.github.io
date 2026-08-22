@@ -44,8 +44,8 @@ export default function FeaturedAlbum() {
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-mono font-bold uppercase tracking-widest mb-3">
             <Disc3 className="w-3.5 h-3.5 animate-spin" /> DISCOGRAFÍA OFICIAL
           </div>
-          <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider">
-            MONEDA AL AIRE — <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-300 to-yellow-500">CASILA OG</span>
+          <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider cursor-default">
+            MONEDA AL AIRE — <span className="title-hover-gold">CASILA OG</span>
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto mt-2">
             14 tracks inéditos de trap, boom bap clásico y ritmos suabes.
