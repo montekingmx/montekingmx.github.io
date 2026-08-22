@@ -28,21 +28,23 @@ export const CASILA_ALBUM = {
 };
 
 export const CASILA_SINGLES_VAULT = [
-  { id: 201, title: "201% (Sencillo Oficial 4K)", artist: "Casila OG ft. Big Bong", duration: "3:30", url: "assets/songs/201_percent.mp3", cover: "assets/cover_trap.jpg", year: "2026" },
-  { id: 202, title: "Profesor", artist: "Casila OG", duration: "3:18", url: "assets/songs/profesor.mp3", cover: "assets/cover_boombap.jpg", year: "2025" },
-  { id: 203, title: "Castillo De Naipes", artist: "Casila OG", duration: "3:42", url: "assets/songs/castillo_de_naipes.mp3", cover: "assets/branding/moneda_1311_textura.png", year: "2025" },
-  { id: 204, title: "Sra. Doubtfire", artist: "Casila OG", duration: "3:50", url: "assets/songs/sra_doubtfire.mp3", cover: "assets/cover_suave.jpg", year: "2024" },
-  { id: 205, title: "No Son Palomitas", artist: "Casila OG", duration: "3:25", url: "assets/songs/no_son_palomitas.mp3", cover: "assets/cover_boombap.jpg", year: "2024" },
-  { id: 206, title: "Chinillo De Villa", artist: "Casila OG x Christoke", duration: "3:12", url: "assets/songs/chinillo_de_villa.mp3", cover: "assets/cover_trap.jpg", year: "2024" },
+  { id: 201, title: "201% (Sencillo Oficial 4K)", artist: "Casila OG ft. Big Bong", duration: "3:30", url: "assets/songs/201_percent.mp3", year: "2026" },
+  { id: 202, title: "Profesor", artist: "Casila OG", duration: "3:18", url: "assets/songs/profesor.mp3", year: "2025" },
+  { id: 203, title: "Castillo De Naipes", artist: "Casila OG", duration: "3:42", url: "assets/songs/castillo_de_naipes.mp3", year: "2025" },
+  { id: 204, title: "No puedo Quejarme", artist: "Casila OG", duration: "3:50", url: "assets/songs/sra_doubtfire.mp3", year: "2024" },
+  { id: 205, title: "No Son Palomitas", artist: "Casila OG", duration: "3:25", url: "assets/songs/no_son_palomitas.mp3", year: "2024" },
+  { id: 206, title: "Chinillo De Villa", artist: "Casila OG x Christoke", duration: "3:12", url: "assets/songs/chinillo_de_villa.mp3", year: "2024" },
 ];
 
 export const MONTEKING_HITS = [
-  { id: 101, title: "201% (Sencillo Oficial)", artist: "Casila OG ft. Big Bong", duration: "3:30", url: "assets/songs/201_percent.mp3", cover: "assets/cover_trap.jpg" },
-  { id: 102, title: "Profesor Master Edition", artist: "Casila OG", duration: "3:18", url: "assets/songs/profesor.mp3", cover: "assets/cover_boombap.jpg" },
-  { id: 103, title: "Castillo De Naipes", artist: "Casila OG", duration: "3:42", url: "assets/songs/castillo_de_naipes.mp3", cover: "assets/branding/moneda_1311_textura.png" },
-  { id: 104, title: "Sour Play Original Mix", artist: "Monteking MX", duration: "3:45", url: "TRAP-MEMPH/yyy_sour_play_||_beat_||_116bpm.mp3", cover: "assets/cover_trap.jpg" },
-  { id: 105, title: "Stairway Class 90s", artist: "Monteking Records", duration: "4:10", url: "BOOMBAP/stairway_class_||_beat_||_ohshit_boombap_classic_||_75bpm_147bpm.mp3", cover: "assets/cover_boombap.jpg" },
-  { id: 106, title: "Psyghetto Club Edit", artist: "Monteking Electro", duration: "3:15", url: "ELECTRO MK/psyghetto_1__||_techno_mk_||_120bpm_121bpm.mp3", cover: "assets/cover_techno.jpg" },
+  { id: 301, title: "Si Supieras", artist: "Barbarela, Millonario", views: "4.0M", duration: "3:15", url: "assets/songs/201_percent.mp3", tag: "4M REPRODUCCIONES" },
+  { id: 302, title: "Sospechoso", artist: "Omar Thug ft. Casila OG, C-Thug, Rona821", views: "171K", duration: "3:48", url: "assets/songs/profesor.mp3", tag: "171K REPRODUCCIONES" },
+  { id: 303, title: "Vendetta", artist: "Casila OG", views: "61K", duration: "3:22", url: "assets/songs/castillo_de_naipes.mp3", tag: "61K REPRODUCCIONES" },
+  { id: 304, title: "Mexicanos Brown Pride", artist: "Monteking Records", views: "58K", duration: "3:35", url: "assets/songs/sra_doubtfire.mp3", tag: "58K REPRODUCCIONES" },
+  { id: 305, title: "Quiero Velas", artist: "Casila OG", views: "54K", duration: "3:18", url: "assets/songs/no_son_palomitas.mp3", tag: "54K REPRODUCCIONES" },
+  { id: 306, title: "From El Cielo", artist: "Casila OG", views: "40K", duration: "3:40", url: "assets/songs/chinillo_de_villa.mp3", tag: "40K REPRODUCCIONES" },
+  { id: 307, title: "Como Has Estado", artist: "Casila OG", views: "34K", duration: "3:12", url: "assets/songs/01_papaya_y_betabel.mp3", tag: "34K REPRODUCCIONES" },
+  { id: 308, title: "Cuantamueca", artist: "Casila OG", views: "33K", duration: "3:05", url: "assets/songs/02_a_veces_me_hago_el_muerto.mp3", tag: "33K REPRODUCCIONES" },
 ];
 
 export default CASILA_ALBUM;
