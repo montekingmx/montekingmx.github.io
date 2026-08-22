@@ -101,8 +101,8 @@ export default function SocialSection() {
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-500/30 text-pink-400 text-xs font-mono font-bold uppercase tracking-widest mb-3">
             <Instagram className="w-3.5 h-3.5" /> ACTIVIDAD OFICIAL & REELS EN VIVO
           </div>
-          <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider">
-            POSTS & REELS <span className="text-stroke-gold">OFICIALES</span>
+          <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider cursor-default">
+            POSTS & REELS <span className="title-hover-gold">OFICIALES</span>
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto mt-2 font-sans">
             Feed en directo desde las cuentas oficiales de Instagram de Monteking MX y Casila OG.

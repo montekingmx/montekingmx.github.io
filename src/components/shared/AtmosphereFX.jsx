@@ -31,7 +31,7 @@ export default function AtmosphereFX() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  // 1. GOLDEN COMET (COMETA DORADO) HIGH-PERFORMANCE CURSOR ENGINE
+  // 1. LUMINOUS GOLDEN LIGHT POINT CURSOR (No trail/estela, pure responsive point of light)
   useEffect(() => {
     if (!isDesktop) return;
 
@@ -48,31 +48,8 @@ export default function AtmosphereFX() {
     resize();
     window.addEventListener('resize', resize, { passive: true });
 
-    let lastX = -100;
-    let lastY = -100;
-
     const handleMouseMove = (e) => {
-      const x = e.clientX;
-      const y = e.clientY;
-      mousePosRef.current = { x, y };
-
-      const dist = Math.hypot(x - lastX, y - lastY);
-      if (dist > 3) {
-        // Add comet trail segments and stardust sparks
-        cometTrailRef.current.push({
-          x,
-          y,
-          vx: (Math.random() - 0.5) * 1.5,
-          vy: (Math.random() - 0.5) * 1.5,
-          size: Math.random() * 3 + 2,
-          alpha: 1,
-          life: 0,
-          maxLife: 28 + Math.random() * 12,
-          isSpark: Math.random() > 0.4
-        });
-        lastX = x;
-        lastY = y;
-      }
+      mousePosRef.current = { x: e.clientX, y: e.clientY };
     };
 
     const handleMouseDown = () => setIsClicking(true);
@@ -89,92 +66,47 @@ export default function AtmosphereFX() {
     window.addEventListener('mouseup', handleMouseUp);
     window.addEventListener('mouseover', handleMouseOver);
 
-    // Render loop for Golden Comet
-    const renderComet = () => {
-      animId = requestAnimationFrame(renderComet);
+    // Ultra-Fast Render loop for Golden Light Point (Zero Tail)
+    const renderCursor = () => {
+      animId = requestAnimationFrame(renderCursor);
       if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const trail = cometTrailRef.current;
       const currentMouse = mousePosRef.current;
 
-      // Draw Comet Tail Glow Ribbon
-      if (trail.length > 2) {
-        ctx.save();
-        for (let i = trail.length - 1; i > 0; i--) {
-          const p = trail[i];
-          const prev = trail[i - 1];
-          const progress = i / trail.length;
-
-          ctx.strokeStyle = `rgba(255, 215, 0, ${progress * 0.6})`;
-          ctx.shadowColor = '#FFD700';
-          ctx.shadowBlur = 8 * progress;
-          ctx.lineWidth = (progress * 4 + 1);
-          ctx.lineCap = 'round';
-
-          ctx.beginPath();
-          ctx.moveTo(prev.x, prev.y);
-          ctx.lineTo(p.x, p.y);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      // Draw Stardust particles
-      for (let i = trail.length - 1; i >= 0; i--) {
-        const p = trail[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life++;
-        p.alpha = Math.max(0, 1 - (p.life / p.maxLife));
-
-        if (p.alpha <= 0) {
-          trail.splice(i, 1);
-          continue;
-        }
-
-        ctx.fillStyle = `rgba(255, ${200 + Math.floor(p.alpha * 55)}, 50, ${p.alpha * 0.9})`;
-        ctx.shadowColor = '#FFD700';
-        ctx.shadowBlur = p.isSpark ? 10 : 4;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * p.alpha, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Draw Glowing Comet Head
       if (currentMouse.x > 0 && currentMouse.y > 0) {
         const headSize = isClicking ? 5 : isHoveringLink ? 8 : 6;
 
-        // Radiant Outer Glow
+        // Radiant Soft Outer Glow
         const radGrad = ctx.createRadialGradient(
           currentMouse.x, currentMouse.y, 0,
-          currentMouse.x, currentMouse.y, headSize * 3.5
+          currentMouse.x, currentMouse.y, headSize * 4
         );
-        radGrad.addColorStop(0, 'rgba(255, 240, 150, 0.95)');
-        radGrad.addColorStop(0.3, 'rgba(255, 215, 0, 0.6)');
+        radGrad.addColorStop(0, 'rgba(255, 240, 160, 0.95)');
+        radGrad.addColorStop(0.25, 'rgba(255, 215, 0, 0.65)');
+        radGrad.addColorStop(0.65, 'rgba(255, 140, 0, 0.2)');
         radGrad.addColorStop(1, 'rgba(255, 140, 0, 0)');
 
         ctx.fillStyle = radGrad;
         ctx.beginPath();
-        ctx.arc(currentMouse.x, currentMouse.y, headSize * 3.5, 0, Math.PI * 2);
+        ctx.arc(currentMouse.x, currentMouse.y, headSize * 4, 0, Math.PI * 2);
         ctx.fill();
 
-        // Solid Star Core
+        // Solid Brilliant Golden Center Core
         ctx.fillStyle = '#FFFFFF';
         ctx.shadowColor = '#FFD700';
-        ctx.shadowBlur = 14;
+        ctx.shadowBlur = 12;
         ctx.beginPath();
-        ctx.arc(currentMouse.x, currentMouse.y, headSize * 0.8, 0, Math.PI * 2);
+        ctx.arc(currentMouse.x, currentMouse.y, headSize * 0.9, 0, Math.PI * 2);
         ctx.fill();
         ctx.shadowBlur = 0;
       }
     };
 
-    renderComet();
+    renderCursor();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -186,7 +118,7 @@ export default function AtmosphereFX() {
     };
   }, [isDesktop, isHoveringLink, isClicking]);
 
-  // 2. BACKGROUND EMBERS (CANVAS 2D)
+  // 2. FLOATING GOLDEN EMBERS / CHISPAS (Ultra-lightweight 2D Canvas)
   useEffect(() => {
     const canvas = canvasSparksRef.current;
     if (!canvas) return;
@@ -194,8 +126,7 @@ export default function AtmosphereFX() {
     if (!ctx) return;
 
     let animId;
-    const isMobile = window.innerWidth < 768;
-    const count = isMobile ? 18 : 36; // Optimized count for extreme smoothness
+    const count = window.innerWidth < 768 ? 14 : 28;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -208,10 +139,10 @@ export default function AtmosphereFX() {
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       radius: Math.random() * 2 + 1,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: -Math.random() * 0.5 - 0.2,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: -Math.random() * 0.45 - 0.2,
       alpha: Math.random() * 0.6 + 0.2,
-      pulse: Math.random() * 0.03 + 0.01,
+      pulse: Math.random() * 0.03 + 0.015,
       phase: Math.random() * Math.PI * 2
     }));
 
@@ -230,8 +161,8 @@ export default function AtmosphereFX() {
           p.x = Math.random() * canvas.width;
         }
 
-        const a = 0.3 + Math.sin(p.phase) * 0.3;
-        ctx.fillStyle = `rgba(255, 200, 0, ${a})`;
+        const a = 0.25 + Math.sin(p.phase) * 0.25;
+        ctx.fillStyle = `rgba(255, 215, 0, ${a})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -266,10 +197,10 @@ export default function AtmosphereFX() {
 
   return (
     <>
-      {/* ── Fixed Global Background Layers (Crocodile Texture 100% Visible) ── */}
+      {/* ── Fixed Global Background Layers (Crocodile Texture + Code Overlay + Chispas) ── */}
       <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
         
-        {/* Layer 1: Real Crocodile Texture - Full contrast and 100% crisp visibility */}
+        {/* Layer 1: Real Crocodile Texture - Full contrast */}
         <div
           id="global-bg-texture"
           className="absolute inset-0 bg-cover bg-center bg-no-repeat will-change-transform"
@@ -280,16 +211,22 @@ export default function AtmosphereFX() {
           }}
         />
 
-        {/* Layer 2: Subtle Luxury Vignette & Dark Tint */}
+        {/* Layer 2: Subtle Ambient Luxury Vignette */}
         <div
           className="absolute inset-0"
           style={{
-            background: "radial-gradient(circle at 50% 25%, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.75) 100%)",
+            background: "radial-gradient(circle at 50% 25%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.75) 100%)",
           }}
         />
 
-        {/* Layer 3: Floating Elements - Directly over Crocodile Texture */}
+        {/* Layer 3: Code / Matrix Hex Overlay */}
+        <AsciiBackground />
+
+        {/* Layer 4: Floating Elements */}
         <InfiniteFloatingElements />
+
+        {/* Layer 5: Floating Golden Embers / Chispas */}
+        <canvas ref={canvasSparksRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-80" />
       </div>
 
       {/* ── Golden Comet (Cometa Dorado) Cursor Canvas (Desktop Only) ── */}

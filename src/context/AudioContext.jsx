@@ -30,9 +30,9 @@ export const AudioProvider = ({ children }) => {
       if (!AudioCtx) return;
       const ctx = new AudioCtx();
       const analyser = ctx.createAnalyser();
-      analyser.fftSize = 512;
-      analyser.smoothingTimeConstant = 0.72;
-      analyser.minDecibels = -85;
+      analyser.fftSize = 1024;
+      analyser.smoothingTimeConstant = 0.68;
+      analyser.minDecibels = -90;
       analyser.maxDecibels = -10;
       const source = ctx.createMediaElementSource(audioRef.current);
       source.connect(analyser);

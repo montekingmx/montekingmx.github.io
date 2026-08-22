@@ -51,7 +51,7 @@ export default function MusicPlayer() {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const coverArt = currentTrack?.cover || 'assets/cover_trap.jpg';
 
-  // Smooth Glowing Neon Wave Curves Visualizer (Zero bars, zero glitch/vibration when paused)
+  // Ultra-Sensitive Broadband Wave Visualizer (20Hz - 15kHz multi-band mapping, zero bars, still resting line)
   useEffect(() => {
     if (!canvasRef.current || isPlayerMinimized) return;
     let animId;
@@ -75,7 +75,7 @@ export default function MusicPlayer() {
       ctx.clearRect(0, 0, w, h);
       const midY = h / 2;
 
-      // ── When Paused: Clean, Completely STILL Gold Laser Resting Line (Zero Glitch / Zero Vibration) ──
+      // ── When Paused: Completely STILL, Clean Gold Laser Guide Line (0% CPU, zero vibration) ──
       if (!isPlaying) {
         ctx.strokeStyle = 'rgba(255, 215, 0, 0.4)';
         ctx.lineWidth = 1.5;
@@ -86,44 +86,88 @@ export default function MusicPlayer() {
         ctx.lineTo(w, midY);
         ctx.stroke();
         ctx.shadowBlur = 0;
-        return; // Do not schedule next frame while paused to save 100% CPU
+        return;
       }
 
-      // ── When Playing: Real-time Audio Reactive Harmonic Neon Wave Curves ──
+      // ── When Playing: Real-time 20Hz - 15kHz Broadband Frequency Decomposition ──
       animId = requestAnimationFrame(draw);
 
-      let energy = 0;
+      let bassEnergy = 0;   // 20Hz - 250Hz (Sub & Kick)
+      let midEnergy = 0;    // 250Hz - 4kHz (Vocals, Leads, Snare)
+      let highEnergy = 0;   // 4kHz - 15kHz (Hi-hats, Air, Shimmer)
+
       if (analyser) {
-        const bufferLength = analyser.frequencyBinCount;
+        const bufferLength = analyser.frequencyBinCount; // 512 bins
         const freqData = new Uint8Array(bufferLength);
         analyser.getByteFrequencyData(freqData);
 
-        let sum = 0;
-        for (let i = 0; i < Math.min(32, bufferLength); i++) {
-          sum += freqData[i];
-        }
-        energy = (sum / (32 * 255));
+        // Sub & Bass: Bins 0 - 6 (~20Hz - 258Hz)
+        let bassSum = 0;
+        for (let i = 0; i <= 6; i++) bassSum += freqData[i];
+        bassEnergy = (bassSum / (7 * 255));
+
+        // Mids: Bins 7 - 92 (~260Hz - 3960Hz)
+        let midSum = 0;
+        for (let i = 7; i <= 92; i++) midSum += freqData[i];
+        midEnergy = (midSum / (86 * 255));
+
+        // Highs: Bins 93 - 348 (~4000Hz - 15000Hz)
+        let highSum = 0;
+        for (let i = 93; i <= 348; i++) highSum += freqData[i];
+        highEnergy = (highSum / (256 * 255));
+      } else {
+        bassEnergy = 0.25;
+        midEnergy = 0.3;
+        highEnergy = 0.2;
       }
 
-      phase += 0.05 + energy * 0.08;
-      const amp = Math.max(6, energy * (h * 0.42) + 4);
+      const totalSpeed = 0.04 + (bassEnergy * 0.08) + (midEnergy * 0.05);
+      phase += totalSpeed;
 
+      // 3 Dedicated Multi-Band Curves
       const waves = [
-        { color: 'rgba(255, 215, 0, 0.95)', shadow: '#FFD700', freq: 0.014, speed: 1.0, offset: 0, lineWidth: 2.2 },
-        { color: 'rgba(255, 140, 0, 0.75)', shadow: '#FF8C00', freq: 0.02, speed: -1.1, offset: Math.PI / 3, lineWidth: 1.8 },
-        { color: 'rgba(0, 229, 255, 0.65)', shadow: '#00E5FF', freq: 0.011, speed: 0.8, offset: Math.PI / 1.5, lineWidth: 1.5 },
+        // Curve 1: Deep Bass & 808s (Gold) - Reacts heavily to low-end punch
+        {
+          color: 'rgba(255, 215, 0, 0.95)',
+          shadow: '#FFD700',
+          freq: 0.012,
+          speed: 1.0,
+          offset: 0,
+          lineWidth: 2.5,
+          amp: Math.max(5, bassEnergy * (h * 0.44) + 4)
+        },
+        // Curve 2: Vocals & Mid Transients (Amber/Crimson) - Fast mid-frequency ripples
+        {
+          color: 'rgba(255, 120, 0, 0.85)',
+          shadow: '#FF7800',
+          freq: 0.022,
+          speed: -1.3,
+          offset: Math.PI / 3,
+          lineWidth: 1.8,
+          amp: Math.max(4, midEnergy * (h * 0.38) + 3)
+        },
+        // Curve 3: Hi-Hats & Air Shimmer 15kHz (Cyan) - High-frequency shimmering ripple
+        {
+          color: 'rgba(0, 229, 255, 0.75)',
+          shadow: '#00E5FF',
+          freq: 0.035,
+          speed: 1.6,
+          offset: Math.PI / 1.5,
+          lineWidth: 1.4,
+          amp: Math.max(3, highEnergy * (h * 0.32) + 2)
+        },
       ];
 
       waves.forEach((wv) => {
         ctx.strokeStyle = wv.color;
         ctx.shadowColor = wv.shadow;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 8;
         ctx.lineWidth = wv.lineWidth;
         ctx.beginPath();
 
-        for (let x = 0; x <= w; x += 4) {
+        for (let x = 0; x <= w; x += 3) {
           const envelope = Math.sin((x / w) * Math.PI);
-          const y = midY + Math.sin(x * wv.freq + phase * wv.speed + wv.offset) * (amp * envelope);
+          const y = midY + Math.sin(x * wv.freq + phase * wv.speed + wv.offset) * (wv.amp * envelope);
           if (x === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
