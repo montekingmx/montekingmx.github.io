@@ -31,35 +31,35 @@ export default function FeaturedAlbum() {
   const isAlbumPlaying = isPlaying && currentTrack?.album === CASILA_ALBUM.title;
 
   return (
-    <section className="py-24 relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="py-16 sm:py-24 relative w-full overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
         
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16 w-full"
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-mono font-bold uppercase tracking-widest mb-3">
             <Disc3 className="w-3.5 h-3.5 animate-spin" /> DISCOGRAFÍA OFICIAL
           </div>
-          <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider cursor-default">
+          <h2 className="font-pirata text-3xl sm:text-5xl lg:text-6xl text-white tracking-wider cursor-default break-words leading-tight">
             MONEDA AL AIRE — <span className="title-hover-gold">CASILA OG</span>
           </h2>
-          <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto mt-2">
+          <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto mt-2 font-sans px-2">
             14 tracks inéditos de trap, boom bap clásico y ritmos suabes.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-10 items-center">
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center w-full">
           
           {/* Album Cover 3D Card */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-5 relative group"
+            className="lg:col-span-5 relative group w-full max-w-md mx-auto"
           >
             <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl border-2 border-yellow-500/30 bg-black">
               <img

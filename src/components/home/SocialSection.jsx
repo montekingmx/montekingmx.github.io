@@ -57,18 +57,18 @@ const REAL_INSTAGRAM_PROFILES = [
     avatar: "assets/branding/mk_logo_color.png",
     followers: "15.7K",
     latestPost: {
-      type: "post",
-      id: "CnxMf0KvJVH",
-      url: "https://www.instagram.com/p/CnxMf0KvJVH/",
-      embedUrl: "https://www.instagram.com/p/CnxMf0KvJVH/embed",
-      title: "Monteking Records — Publicación Oficial",
+      type: "reel",
+      id: "DUHQVj1kYtk",
+      url: "https://www.instagram.com/reel/DUHQVj1kYtk/",
+      embedUrl: "https://www.instagram.com/reel/DUHQVj1kYtk/embed",
+      title: "Monteking Records — Sesión de Estudio",
       caption: "Sesión de estudio y lanzamientos discográficos oficiales.",
-      tag: "ÚLTIMO POST REAL",
+      tag: "ÚLTIMO REEL REAL",
       previewImg: "assets/bg_elements/B4A87904-14A8-464B-BE0F-9381ED6DEACE.PNG"
     },
     reels: [
-      { id: "CgpXnaxJYgw", url: "https://www.instagram.com/p/CgpXnaxJYgw/", title: "Monteking Records — Post Oficial #2", type: "post", previewImg: "assets/bg_elements/represents_amarillos.png" },
-      { id: "CSnkoSBFb0I", url: "https://www.instagram.com/p/CSnkoSBFb0I/", title: "Monteking Records — Post Oficial #3", type: "post", previewImg: "assets/bg_elements/BD31866D-B72A-44DF-AC62-7DB574A82055.JPEG" }
+      { id: "DUPQeqZjJ-L", url: "https://www.instagram.com/reel/DUPQeqZjJ-L/", title: "Monteking Records — Beat Drops", type: "reel", previewImg: "assets/bg_elements/represents_amarillos.png" },
+      { id: "DNuJTMhWCq9", url: "https://www.instagram.com/reel/DNuJTMhWCq9/", title: "Monteking Records — Grabación 13-11", type: "reel", previewImg: "assets/bg_elements/BD31866D-B72A-44DF-AC62-7DB574A82055.JPEG" }
     ]
   }
 ];
@@ -88,24 +88,24 @@ export default function SocialSection() {
   const account = REAL_INSTAGRAM_PROFILES[activeAccount];
 
   return (
-    <section className="py-24 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="py-16 sm:py-24 relative overflow-hidden w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
 
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          className="text-center mb-12 sm:mb-14 w-full"
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-500/30 text-pink-400 text-xs font-mono font-bold uppercase tracking-widest mb-3">
             <Instagram className="w-3.5 h-3.5" /> ACTIVIDAD OFICIAL & REELS EN VIVO
           </div>
           <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider cursor-default">
-            POSTS & REELS <span className="title-hover-gold">OFICIALES</span>
+            <span className="title-hover-gold">REDES</span>
           </h2>
-          <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto mt-2 font-sans">
-            Feed en directo desde las cuentas oficiales de Instagram de Monteking MX y Casila OG.
+          <p className="text-zinc-400 text-xs sm:text-base max-w-xl mx-auto mt-2 font-sans px-2">
+            Feed en directo desde las cuentas oficiales de Instagram de Monteking MX, Casila OG y Monteking Records.
           </p>
         </motion.div>
 

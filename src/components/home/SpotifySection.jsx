@@ -1,19 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, ExternalLink, Disc3, Radio, Music2, Heart, Sparkles, Volume2, RotateCcw } from 'lucide-react';
+import { Play, Pause, ExternalLink, Disc3, Radio, Music2, Heart, Sparkles, Volume2, RotateCcw, Sliders } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useAudio } from '@/context/AudioContext';
 import { CASILA_ALBUM } from '@/data/musicData';
 import { Link } from 'react-router-dom';
 
 export default function SpotifySection() {
-  const { currentTrack, isPlaying, playTrack, togglePlayPause } = useAudio();
+  const { currentTrack, isPlaying, playTrack, togglePlayPause, seek, currentTime, setPlaybackRate, audioRef } = useAudio();
   const [selectedTrackIdx, setSelectedTrackIdx] = useState(0);
-  const [rpm, setRpm] = useState(33);
+  const [rpmMode, setRpmMode] = useState('45'); // '45' (Normal 1.0x) or '33' (Rebajada 0.82x)
   const [isScratching, setIsScratching] = useState(false);
+  const [rotationAngle, setRotationAngle] = useState(0);
+  
+  const vinylRef = useRef(null);
+  const lastAngleRef = useRef(0);
+  const animFrameRef = useRef(null);
 
   const activeTrack = CASILA_ALBUM.tracks[selectedTrackIdx] || CASILA_ALBUM.tracks[0];
   const isThisAlbumPlaying = isPlaying && (currentTrack?.album === CASILA_ALBUM.title || currentTrack?.title === activeTrack.title);
+
+  // Apply RPM speed & rebajada pitch
+  const handleSetRpm = (mode) => {
+    setRpmMode(mode);
+    if (mode === '33') {
+      // Rebajada mode: Slowed down to 0.82x with deep pitch
+      setPlaybackRate(0.82);
+    } else {
+      // Normal mode: 45 RPM = velocidad y tono estándar (1.0x)
+      setPlaybackRate(1.0);
+    }
+  };
+
+  // Continuous vinyl rotation loop when playing
+  useEffect(() => {
+    if (!isThisAlbumPlaying || isScratching) return;
+    const speed = rpmMode === '45' ? 1.6 : 2.2; // degrees per frame
+    let localId;
+    const loop = () => {
+      setRotationAngle(prev => (prev + speed) % 360);
+      localId = requestAnimationFrame(loop);
+    };
+    localId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(localId);
+  }, [isThisAlbumPlaying, isScratching, rpmMode]);
+
+  // Vinyl Drag & Scratch Pointer Interaction
+  const handlePointerDown = (e) => {
+    setIsScratching(true);
+    const rect = vinylRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    lastAngleRef.current = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+  };
+
+  const handlePointerMove = (e) => {
+    if (!isScratching || !vinylRef.current) return;
+    const rect = vinylRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    
+    let delta = currentAngle - lastAngleRef.current;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+
+    lastAngleRef.current = currentAngle;
+    setRotationAngle(prev => prev + delta);
+
+    // Scratch audio scrubbing in real-time
+    if (audioRef?.current) {
+      const scrubSeconds = (delta / 360) * 1.5;
+      const target = Math.max(0, audioRef.current.currentTime + scrubSeconds);
+      seek(target);
+    }
+  };
+
+  const handlePointerUp = () => {
+    if (isScratching) {
+      setIsScratching(false);
+      // Restore playback rate
+      setPlaybackRate(rpmMode === '45' ? 0.82 : 1.0);
+    }
+  };
 
   const handlePlaySong = (track, idx) => {
     setSelectedTrackIdx(idx);
@@ -31,74 +101,93 @@ export default function SpotifySection() {
       togglePlayPause();
     } else {
       playTrack(formatted);
+      setPlaybackRate(rpmMode === '45' ? 0.82 : 1.0);
     }
   };
 
   return (
-    <section className="py-24 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="py-16 sm:py-24 relative overflow-hidden w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full">
         
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16 w-full"
         >
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-mono font-bold uppercase tracking-widest mb-3">
             <Disc3 className="w-3.5 h-3.5 animate-spin" /> ESTACIÓN AUDIÓFILA 3D & STREAMING
           </div>
-          <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider">
-            TOCADISCOS 3D & <span className="text-stroke-gold">DISCOGRAFÍA</span>
+          <h2 className="font-pirata text-3xl sm:text-5xl lg:text-6xl text-white tracking-wider cursor-default break-words">
+            TOCADISCOS 3D & <span className="title-hover-gold">DISCOGRAFÍA</span>
           </h2>
-          <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto mt-2 font-sans">
-            Interactúa con el reproductor de vinilo tridimensional de alta gama y reproduce los temas de Casila OG.
+          <p className="text-zinc-400 text-xs sm:text-sm max-w-xl mx-auto mt-2 font-sans px-2">
+            Interactúa con el reproductor de vinilo tridimensional: haz scratch arrastrando el disco y cambia entre velocidad normal (33 RPM) o rebajada (45 RPM).
           </p>
         </motion.div>
 
         {/* Dual Panels Grid */}
-        <div className="grid lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid lg:grid-cols-12 gap-8 items-stretch w-full">
           
-          {/* Panel 1: 3D INTERACTIVE VINYL TURNTABLE DECK (Item 10) */}
-          <div className="lg:col-span-7 bg-gradient-to-b from-zinc-950 via-black to-zinc-950 rounded-3xl p-6 sm:p-8 border-2 border-yellow-500/30 shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col justify-between relative overflow-hidden">
+          {/* Panel 1: 3D INTERACTIVE VINYL TURNTABLE DECK WITH REAL SCRATCH */}
+          <div className="lg:col-span-7 bg-gradient-to-b from-zinc-950 via-black to-zinc-950 rounded-3xl p-5 sm:p-8 border-2 border-yellow-500/30 shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col justify-between relative overflow-hidden w-full">
             
             {/* Ambient gold glow */}
             <div className="absolute -right-20 -top-20 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Turntable Top Bar */}
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-zinc-800">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-zinc-800">
               <div className="flex items-center gap-2.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-ping" />
                 <span className="text-xs font-mono font-bold uppercase text-yellow-400 tracking-wider">
-                  MK-1311 DIRECT DRIVE TURNTABLE
+                  MK-1311 DIRECT DRIVE VINYL DECK
                 </span>
               </div>
-              <div className="flex items-center gap-2 bg-black/80 px-3 py-1 rounded-xl border border-zinc-800 text-xs font-mono">
+              
+              {/* 33 RPM (Normal) vs 45 RPM (Rebajada) Selector */}
+              <div className="flex items-center gap-1.5 bg-black/90 p-1 rounded-xl border border-zinc-800 text-xs font-mono">
                 <button
-                  onClick={() => setRpm(33)}
-                  className={`px-2 py-0.5 rounded-md font-bold transition-colors ${rpm === 33 ? 'bg-yellow-400 text-black' : 'text-zinc-500 hover:text-zinc-300'}`}
+                  onClick={() => handleSetRpm('45')}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    rpmMode === '45' ? 'bg-yellow-400 text-black shadow-md' : 'text-zinc-400 hover:text-white'
+                  }`}
+                  title="Velocidad normal (1.0x)"
                 >
-                  33 RPM
+                  45 RPM (NORMAL)
                 </button>
                 <button
-                  onClick={() => setRpm(45)}
-                  className={`px-2 py-0.5 rounded-md font-bold transition-colors ${rpm === 45 ? 'bg-yellow-400 text-black' : 'text-zinc-500 hover:text-zinc-300'}`}
+                  onClick={() => handleSetRpm('33')}
+                  className={`px-3 py-1 rounded-lg font-bold transition-all ${
+                    rpmMode === '33' ? 'bg-gradient-to-r from-red-600 to-amber-500 text-white shadow-md' : 'text-zinc-400 hover:text-white'
+                  }`}
+                  title="Modo Rebajada (0.82x Slowed & Pitch)"
                 >
-                  45 RPM
+                  33 RPM (REBAJADA)
                 </button>
               </div>
             </div>
 
-            {/* 3D Turntable Platter & Tonearm Canvas */}
-            <div className="relative py-6 flex flex-col items-center justify-center">
+            {/* 3D Turntable Platter with Drag & Scratch */}
+            <div className="relative py-4 flex flex-col items-center justify-center select-none">
               
               {/* Platter Base */}
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-tr from-zinc-900 via-zinc-800 to-zinc-950 p-3 shadow-[0_20px_50px_rgba(0,0,0,0.95)] border-4 border-zinc-700 flex items-center justify-center">
+              <div 
+                ref={vinylRef}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerLeave={handlePointerUp}
+                className={`relative w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-gradient-to-tr from-zinc-900 via-zinc-800 to-zinc-950 p-3 shadow-[0_20px_50px_rgba(0,0,0,0.95)] border-4 border-zinc-700 flex items-center justify-center cursor-grab active:cursor-grabbing touch-none ${
+                  isScratching ? 'ring-4 ring-yellow-400/60 scale-[1.02]' : ''
+                } transition-transform`}
+              >
                 
                 {/* Vinyl Record */}
-                <motion.div
-                  className="relative w-full h-full rounded-full bg-black border-2 border-zinc-800 overflow-hidden cursor-grab active:cursor-grabbing flex items-center justify-center shadow-2xl"
+                <div
+                  className="relative w-full h-full rounded-full bg-black border-2 border-zinc-800 overflow-hidden flex items-center justify-center shadow-2xl will-change-transform"
                   style={{
+                    transform: `rotate(${rotationAngle}deg)`,
                     backgroundImage: `
                       radial-gradient(circle, transparent 28%, rgba(255,255,255,0.03) 29%, transparent 30%),
                       radial-gradient(circle, transparent 45%, rgba(255,255,255,0.04) 46%, transparent 47%),
@@ -106,24 +195,12 @@ export default function SpotifySection() {
                       radial-gradient(circle, transparent 82%, rgba(255,255,255,0.04) 83%, transparent 84%)
                     `
                   }}
-                  animate={{
-                    rotate: isThisAlbumPlaying && !isScratching ? 360 : 0
-                  }}
-                  transition={{
-                    rotate: {
-                      duration: rpm === 45 ? 1.33 : 1.8,
-                      repeat: Infinity,
-                      ease: "linear"
-                    }
-                  }}
-                  onMouseDown={() => setIsScratching(true)}
-                  onMouseUp={() => setIsScratching(false)}
                 >
                   {/* Vinyl Sheen Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/15 pointer-events-none rounded-full" />
 
                   {/* Center Label (Album Art Cover) */}
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-yellow-400/80 shadow-2xl relative z-10">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden border-4 border-yellow-400/80 shadow-2xl relative z-10 pointer-events-none">
                     <img
                       src={CASILA_ALBUM.cover}
                       alt="Center Label"
@@ -132,7 +209,7 @@ export default function SpotifySection() {
                     {/* Spindle hole */}
                     <div className="absolute inset-0 m-auto w-3.5 h-3.5 bg-zinc-900 rounded-full border border-yellow-200" />
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Tonearm (Pivots automatically when playing) */}
                 <motion.div
@@ -158,6 +235,9 @@ export default function SpotifySection() {
 
               </div>
 
+              <span className="text-[11px] font-mono text-zinc-500 mt-3 block">
+                {isScratching ? '⚡ HACIENDO SCRATCH EN VIVO' : '👆 Arrastra el vinilo para hacer DJ Scratch'}
+              </span>
             </div>
 
             {/* Currently Selected Song Bar & Direct Playback Controls */}
