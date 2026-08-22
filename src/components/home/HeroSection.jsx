@@ -143,6 +143,10 @@ export default function HeroSection() {
             src={IMAGES.logo}
             alt="Monteking MX Logo"
             className="h-32 md:h-44 w-auto mx-auto object-contain transition-all duration-300 drop-shadow-[0_0_35px_rgba(255,215,0,0.65)] group-hover:drop-shadow-[0_0_60px_rgba(255,215,0,0.95)]"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "assets/branding/mk_logo_black.png";
+            }}
           />
 
           <div className="text-[10px] font-mono text-yellow-400/80 tracking-widest opacity-0 group-hover:opacity-100 transition-opacity uppercase mt-2">
@@ -161,6 +165,10 @@ export default function HeroSection() {
             src={IMAGES.title}
             alt="Moneda Al Aire - Casila OG"
             className="max-w-[90%] md:max-w-xl mx-auto drop-shadow-2xl"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "assets/branding/moneda_1311_textura.png";
+            }}
           />
         </motion.div>
 
