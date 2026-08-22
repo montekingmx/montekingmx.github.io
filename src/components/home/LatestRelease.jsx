@@ -32,8 +32,8 @@ export default function LatestRelease() {
             <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
             ÚLTIMO LANZAMIENTO OFICIAL 4K
           </div>
-          <h2 className="font-pirata text-4xl sm:text-6xl text-white tracking-wider">
-            201XCIENTO — <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-400 to-yellow-400">CASILA OG</span>
+          <h2 className="font-pirata text-3xl sm:text-5xl lg:text-6xl text-white tracking-wider cursor-default break-words">
+            201XCIENTO — <span className="title-hover-gold">CASILA OG</span>
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto mt-2">
             El videoclip más reciente e icónico del canal oficial de Monteking MX.

@@ -42,8 +42,8 @@ export default function ArtistSpotlight() {
             <span className="text-yellow-500 uppercase tracking-[0.3em] text-sm font-medium">ARTISTA / PRODUCTOR / BEATMAKER / DISEÑADOR
 
             </span>
-            <h2 className="text-5xl md:text-7xl font-bold text-white mt-4 mb-6">
-              {CASILA.name}
+            <h2 className="text-4xl sm:text-6xl md:text-7xl font-bold text-white mt-4 mb-6 cursor-default">
+              <span className="title-hover-gold">{CASILA.name}</span>
             </h2>
             <p className="text-zinc-400 text-lg leading-relaxed mb-8">
               {CASILA.bio}

@@ -51,7 +51,7 @@ export default function MusicPlayer() {
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const coverArt = currentTrack?.cover || 'assets/cover_trap.jpg';
 
-  // Ultra-Sensitive Broadband Wave Visualizer (20Hz - 15kHz multi-band mapping, zero bars, still resting line)
+  // Ultra-High-Resolution Multi-Band Fluid Wave Visualizer (20Hz - 15kHz)
   useEffect(() => {
     if (!canvasRef.current || isPlayerMinimized) return;
     let animId;
@@ -75,9 +75,9 @@ export default function MusicPlayer() {
       ctx.clearRect(0, 0, w, h);
       const midY = h / 2;
 
-      // ── When Paused: Completely STILL, Clean Gold Laser Guide Line (0% CPU, zero vibration) ──
+      // ── When Paused: Completely STILL, Pure Gold Laser Guide Line (0% CPU, 0 vibration) ──
       if (!isPlaying) {
-        ctx.strokeStyle = 'rgba(255, 215, 0, 0.4)';
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.45)';
         ctx.lineWidth = 1.5;
         ctx.shadowColor = '#FFD700';
         ctx.shadowBlur = 4;
@@ -89,83 +89,107 @@ export default function MusicPlayer() {
         return;
       }
 
-      // ── When Playing: Real-time 20Hz - 15kHz Broadband Frequency Decomposition ──
+      // ── When Playing: Real-time High-Resolution 20Hz - 15kHz Spectral Decomposition ──
       animId = requestAnimationFrame(draw);
 
-      let bassEnergy = 0;   // 20Hz - 250Hz (Sub & Kick)
-      let midEnergy = 0;    // 250Hz - 4kHz (Vocals, Leads, Snare)
-      let highEnergy = 0;   // 4kHz - 15kHz (Hi-hats, Air, Shimmer)
+      let subBass = 0;    // 20Hz - 120Hz (Kicks & 808s)
+      let punchBass = 0;  // 120Hz - 350Hz (Basslines & punch)
+      let vocalsMid = 0;  // 350Hz - 3000Hz (Vocals & instruments)
+      let snapHighs = 0;  // 3000Hz - 7500Hz (Snares & claps)
+      let shimmer = 0;    // 7500Hz - 15000Hz (Hi-hats, cymbals & air)
 
       if (analyser) {
         const bufferLength = analyser.frequencyBinCount; // 512 bins
         const freqData = new Uint8Array(bufferLength);
         analyser.getByteFrequencyData(freqData);
 
-        // Sub & Bass: Bins 0 - 6 (~20Hz - 258Hz)
-        let bassSum = 0;
-        for (let i = 0; i <= 6; i++) bassSum += freqData[i];
-        bassEnergy = (bassSum / (7 * 255));
+        // Sub Bass: Bins 0 - 3 (0 - 130 Hz)
+        let sSum = 0;
+        for (let i = 0; i <= 3; i++) sSum += freqData[i];
+        subBass = sSum / (4 * 255);
 
-        // Mids: Bins 7 - 92 (~260Hz - 3960Hz)
-        let midSum = 0;
-        for (let i = 7; i <= 92; i++) midSum += freqData[i];
-        midEnergy = (midSum / (86 * 255));
+        // Punch Bass: Bins 4 - 9 (130 - 390 Hz)
+        let pSum = 0;
+        for (let i = 4; i <= 9; i++) pSum += freqData[i];
+        punchBass = pSum / (6 * 255);
 
-        // Highs: Bins 93 - 348 (~4000Hz - 15000Hz)
-        let highSum = 0;
-        for (let i = 93; i <= 348; i++) highSum += freqData[i];
-        highEnergy = (highSum / (256 * 255));
+        // Vocals/Mids: Bins 10 - 70 (400 - 3000 Hz)
+        let vSum = 0;
+        for (let i = 10; i <= 70; i++) vSum += freqData[i];
+        vocalsMid = vSum / (61 * 255);
+
+        // Snap Highs: Bins 71 - 175 (3000 - 7500 Hz)
+        let snSum = 0;
+        for (let i = 71; i <= 175; i++) snSum += freqData[i];
+        snapHighs = snSum / (105 * 255);
+
+        // Shimmer: Bins 176 - 360 (7500 - 15500 Hz)
+        let shSum = 0;
+        for (let i = 176; i <= 360; i++) shSum += freqData[i];
+        shimmer = shSum / (185 * 255);
       } else {
-        bassEnergy = 0.25;
-        midEnergy = 0.3;
-        highEnergy = 0.2;
+        subBass = 0.35;
+        punchBass = 0.3;
+        vocalsMid = 0.25;
+        snapHighs = 0.2;
+        shimmer = 0.15;
       }
 
-      const totalSpeed = 0.04 + (bassEnergy * 0.08) + (midEnergy * 0.05);
-      phase += totalSpeed;
+      phase += 0.04 + (subBass * 0.07) + (vocalsMid * 0.04);
 
-      // 3 Dedicated Multi-Band Curves
-      const waves = [
-        // Curve 1: Deep Bass & 808s (Gold) - Reacts heavily to low-end punch
+      // 4 High-Resolution Reactive Neon Fluid Harmonic Bands
+      const waveLayers = [
+        // 1. Heavy Sub-Bass & 808 Ground Swell (Pure Gold)
         {
           color: 'rgba(255, 215, 0, 0.95)',
           shadow: '#FFD700',
-          freq: 0.012,
+          freq: 0.009,
           speed: 1.0,
           offset: 0,
-          lineWidth: 2.5,
-          amp: Math.max(5, bassEnergy * (h * 0.44) + 4)
+          lineWidth: 3.0,
+          amp: Math.max(6, subBass * (h * 0.46) + 4)
         },
-        // Curve 2: Vocals & Mid Transients (Amber/Crimson) - Fast mid-frequency ripples
+        // 2. Punch & Melodic Fluid Ribbon (Amber / Crimson Fire)
         {
-          color: 'rgba(255, 120, 0, 0.85)',
-          shadow: '#FF7800',
-          freq: 0.022,
-          speed: -1.3,
+          color: 'rgba(255, 130, 0, 0.85)',
+          shadow: '#FF8200',
+          freq: 0.016,
+          speed: -1.25,
           offset: Math.PI / 3,
-          lineWidth: 1.8,
-          amp: Math.max(4, midEnergy * (h * 0.38) + 3)
+          lineWidth: 2.2,
+          amp: Math.max(5, (punchBass * 0.6 + vocalsMid * 0.4) * (h * 0.40) + 3)
         },
-        // Curve 3: Hi-Hats & Air Shimmer 15kHz (Cyan) - High-frequency shimmering ripple
+        // 3. Vocals & Snare Resonance (Electric Crimson / Violet)
+        {
+          color: 'rgba(236, 72, 153, 0.75)',
+          shadow: '#EC4899',
+          freq: 0.024,
+          speed: 1.5,
+          offset: Math.PI / 1.8,
+          lineWidth: 1.8,
+          amp: Math.max(4, (vocalsMid * 0.5 + snapHighs * 0.5) * (h * 0.34) + 2)
+        },
+        // 4. Ultra-Crisp Hi-Hat Shimmer 15kHz (Electric Cyan Glow)
         {
           color: 'rgba(0, 229, 255, 0.75)',
           shadow: '#00E5FF',
-          freq: 0.035,
-          speed: 1.6,
-          offset: Math.PI / 1.5,
+          freq: 0.038,
+          speed: -1.8,
+          offset: Math.PI / 1.2,
           lineWidth: 1.4,
-          amp: Math.max(3, highEnergy * (h * 0.32) + 2)
+          amp: Math.max(3, shimmer * (h * 0.30) + 2)
         },
       ];
 
-      waves.forEach((wv) => {
+      waveLayers.forEach((wv) => {
         ctx.strokeStyle = wv.color;
         ctx.shadowColor = wv.shadow;
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 10;
         ctx.lineWidth = wv.lineWidth;
         ctx.beginPath();
 
-        for (let x = 0; x <= w; x += 3) {
+        // High-density sampling (every 2px) for maximum precision curve
+        for (let x = 0; x <= w; x += 2) {
           const envelope = Math.sin((x / w) * Math.PI);
           const y = midY + Math.sin(x * wv.freq + phase * wv.speed + wv.offset) * (wv.amp * envelope);
           if (x === 0) ctx.moveTo(x, y);

@@ -49,8 +49,8 @@ export default function BrandCollaborators() {
           <span className="text-yellow-500 uppercase tracking-[0.3em] text-sm font-medium">
             Red de Colaboración
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mt-4 mb-4">
-            Marcas Aliadas
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mt-4 mb-4 cursor-default">
+            <span className="title-hover-gold">Marcas Aliadas</span>
           </h2>
           <p className="text-zinc-400 max-w-2xl mx-auto">
             Trabajamos junto a marcas que comparten nuestra visión y valores

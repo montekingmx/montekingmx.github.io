@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 const IMAGE_POOLS = [
   // Slot 1 (Top Left)
   [
-    "assets/bg_elements/Gemini_Generated_Image_ahn35eahn35eahn3.png",
+    "assets/bg_elements/13-11_moneda_diseno_1.png",
     "assets/bg_elements/Whisk_058422086d1069aa42e45c9c492796cddr.png",
-    "assets/bg_elements/13-11_MONEDA_DISEÑO_#1.png",
-    "assets/bg_elements/Whisk_1050872ab80877fb2de4c716aa3d777bdr.png"
+    "assets/bg_elements/MK_GLOBAL_SELLO.png",
+    "assets/bg_elements/Gemini_Generated_Image_ahn35eahn35eahn3.png"
   ],
   // Slot 2 (Top Right)
   [
@@ -65,11 +65,11 @@ const CARD_SLOTS = [
 export default function InfiniteFloatingElements() {
   const [cycleIndex, setCycleIndex] = useState(0);
 
-  // Smooth image alternation every 14 seconds
+  // Smooth image alternation every 12 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setCycleIndex((prev) => prev + 1);
-    }, 14000);
+    }, 12000);
     return () => clearInterval(timer);
   }, []);
 
@@ -82,21 +82,20 @@ export default function InfiniteFloatingElements() {
         return (
           <div
             key={slot.id}
-            className={`absolute ${slot.style} ${slot.anim} rounded-2xl overflow-hidden shadow-2xl border border-yellow-500/40 bg-zinc-950/85 opacity-70 hover:opacity-100 transition-opacity duration-300 pointer-events-auto cursor-pointer will-change-transform`}
+            className={`absolute ${slot.style} ${slot.anim} rounded-2xl overflow-hidden shadow-2xl border border-yellow-500/40 bg-zinc-950/90 opacity-75 hover:opacity-100 transition-opacity duration-300 pointer-events-auto cursor-pointer will-change-transform`}
           >
-            <div className="relative aspect-video w-full h-full">
+            <div className="relative aspect-video w-full h-full bg-zinc-950">
               <img
                 src={currentSrc}
                 alt=""
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105 filter brightness-90 contrast-110"
+                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105 filter brightness-95 contrast-110"
                 onError={(e) => { 
                   e.target.onerror = null; 
-                  e.target.style.display = 'none'; 
+                  e.target.src = "assets/bg_elements/MK_GLOBAL_SELLO.png"; 
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-yellow-400/80 shadow-[0_0_6px_#FFD700]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-yellow-400/90 shadow-[0_0_8px_#FFD700]" />
             </div>
           </div>
         );

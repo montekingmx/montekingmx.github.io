@@ -176,6 +176,17 @@ export const AudioProvider = ({ children }) => {
     }
   };
 
+  const [playbackRate, setPlaybackRateState] = useState(1.0);
+
+  const setPlaybackRate = (rate) => {
+    setPlaybackRateState(rate);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = rate;
+      // When rebajada (slowed down), preserve pitch can be false or true depending on preference
+      audioRef.current.preservesPitch = false;
+    }
+  };
+
   return (
     <AudioContext.Provider value={{
       playlist,
@@ -188,12 +199,15 @@ export const AudioProvider = ({ children }) => {
       duration,
       shuffle,
       repeatMode,
+      playbackRate,
       isPlayerMinimized,
       analyser: analyserRef.current,
+      audioRef,
       setVolume,
       setIsMuted,
       setShuffle,
       setRepeatMode,
+      setPlaybackRate,
       setIsPlayerMinimized,
       playTrack,
       togglePlayPause,
