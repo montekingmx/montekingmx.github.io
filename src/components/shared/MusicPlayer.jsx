@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, Pause, SkipBack, SkipForward, Volume2, VolumeX,
   Minimize2, Maximize2, Music, ListMusic, Shuffle, Repeat, Repeat1, Disc3,
-  ExternalLink, Sparkles
+  ExternalLink, Sparkles, Activity, Zap, BarChart3, Sliders, Layers
 } from 'lucide-react';
 import { Slider } from "@/components/ui/slider";
 import { useAudio } from '@/context/AudioContext';
@@ -15,6 +15,15 @@ const fmt = (s) => {
   if (!s || isNaN(s)) return '0:00';
   return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 };
+
+export const SPECTRUM_MODES = [
+  { id: 'waves', name: 'Ondas Armónicas', short: 'ONDAS', icon: Activity, desc: 'Ondas neón multicapa por frecuencias (20Hz - 15kHz)' },
+  { id: 'oscilloscope', name: 'Osciloscopio Láser', short: 'LÁSER PCM', icon: Zap, desc: 'Vector analógico de audio en tiempo real' },
+  { id: 'aurora', name: 'Seda Líquida / Aurora', short: 'AURORA', icon: Sparkles, desc: 'Gradiente de oro líquido con pulsación de sub-bass' },
+  { id: 'bars', name: 'Micro-Segmentos Pro', short: 'HARDWARE', icon: BarChart3, desc: 'Barras simétricas de alta precisión con picos de gravedad' },
+  { id: 'particles', name: 'Constelación Stardust', short: 'STARDUST', icon: Disc3, desc: 'Partículas y nodos enlazados reactivos al golpe' },
+  { id: 'hybrid', name: 'Híbrido Master', short: 'HÍBRIDO', icon: Layers, desc: 'Osciloscopio láser + aura espectral reactiva' },
+];
 
 export default function MusicPlayer() {
   const {
@@ -43,21 +52,57 @@ export default function MusicPlayer() {
   } = useAudio();
 
   const [showList, setShowList] = useState(false);
+  const [showModesMenu, setShowModesMenu] = useState(false);
+  const [spectrumMode, setSpectrumMode] = useState(() => {
+    return localStorage.getItem('mk_spectrum_mode') || 'waves';
+  });
+  const [modeNotice, setModeNotice] = useState(null);
   const [hovered, setHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragValue, setDragValue] = useState(0);
   const canvasRef = useRef(null);
+  const peakDotsRef = useRef(new Array(64).fill(0));
+  const particleNodesRef = useRef(null);
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const coverArt = currentTrack?.cover || 'assets/cover_trap.jpg';
 
-  // Ultra-High-Resolution Multi-Band Fluid Wave Visualizer (20Hz - 15kHz)
+  // Save selected mode to localStorage
+  const handleSelectMode = (modeId) => {
+    setSpectrumMode(modeId);
+    localStorage.setItem('mk_spectrum_mode', modeId);
+    const found = SPECTRUM_MODES.find(m => m.id === modeId);
+    if (found) {
+      setModeNotice(found.name);
+      setTimeout(() => setModeNotice(null), 2500);
+    }
+  };
+
+  // Cycle through spectrum modes on button click
+  const cycleSpectrumMode = () => {
+    const currIdx = SPECTRUM_MODES.findIndex(m => m.id === spectrumMode);
+    const nextIdx = (currIdx + 1) % SPECTRUM_MODES.length;
+    handleSelectMode(SPECTRUM_MODES[nextIdx].id);
+  };
+
+  // ── Multi-Mode Spectrum Visualizer Engine ──
   useEffect(() => {
     if (!canvasRef.current || isPlayerMinimized) return;
     let animId;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d', { alpha: true });
     let phase = 0;
+
+    // Initialize particle constellation nodes
+    if (!particleNodesRef.current) {
+      particleNodesRef.current = Array.from({ length: 42 }, (_, idx) => ({
+        baseX: idx / 42,
+        yOffset: 0,
+        vy: 0,
+        size: Math.random() * 2 + 1.5,
+        phase: Math.random() * Math.PI * 2
+      }));
+    }
 
     const draw = () => {
       const displayWidth = canvas.offsetWidth;
@@ -89,7 +134,7 @@ export default function MusicPlayer() {
         return;
       }
 
-      // ── When Playing: Real-time High-Resolution 20Hz - 15kHz Spectral Decomposition ──
+      // ── When Playing: Real-time Audio Spectrum Rendering Loop ──
       animId = requestAnimationFrame(draw);
 
       let subBass = 0;    // 20Hz - 120Hz (Kicks & 808s)
@@ -98,32 +143,35 @@ export default function MusicPlayer() {
       let snapHighs = 0;  // 3000Hz - 7500Hz (Snares & claps)
       let shimmer = 0;    // 7500Hz - 15000Hz (Hi-hats, cymbals & air)
 
-      if (analyser) {
-        const bufferLength = analyser.frequencyBinCount; // 512 bins
-        const freqData = new Uint8Array(bufferLength);
-        analyser.getByteFrequencyData(freqData);
+      const bufferLength = analyser ? analyser.frequencyBinCount : 512;
+      const freqData = new Uint8Array(bufferLength);
+      const timeData = new Uint8Array(bufferLength);
 
-        // Sub Bass: Bins 0 - 3 (0 - 130 Hz)
+      if (analyser) {
+        analyser.getByteFrequencyData(freqData);
+        analyser.getByteTimeDomainData(timeData);
+
+        // Sub Bass
         let sSum = 0;
         for (let i = 0; i <= 3; i++) sSum += freqData[i];
         subBass = sSum / (4 * 255);
 
-        // Punch Bass: Bins 4 - 9 (130 - 390 Hz)
+        // Punch Bass
         let pSum = 0;
         for (let i = 4; i <= 9; i++) pSum += freqData[i];
         punchBass = pSum / (6 * 255);
 
-        // Vocals/Mids: Bins 10 - 70 (400 - 3000 Hz)
+        // Vocals / Mids
         let vSum = 0;
         for (let i = 10; i <= 70; i++) vSum += freqData[i];
         vocalsMid = vSum / (61 * 255);
 
-        // Snap Highs: Bins 71 - 175 (3000 - 7500 Hz)
+        // Snap Highs
         let snSum = 0;
         for (let i = 71; i <= 175; i++) snSum += freqData[i];
         snapHighs = snSum / (105 * 255);
 
-        // Shimmer: Bins 176 - 360 (7500 - 15500 Hz)
+        // Shimmer Highs
         let shSum = 0;
         for (let i = 176; i <= 360; i++) shSum += freqData[i];
         shimmer = shSum / (185 * 255);
@@ -137,68 +185,227 @@ export default function MusicPlayer() {
 
       phase += 0.04 + (subBass * 0.07) + (vocalsMid * 0.04);
 
-      // 4 High-Resolution Reactive Neon Fluid Harmonic Bands
-      const waveLayers = [
-        // 1. Heavy Sub-Bass & 808 Ground Swell (Pure Gold)
-        {
-          color: 'rgba(255, 215, 0, 0.95)',
-          shadow: '#FFD700',
-          freq: 0.009,
-          speed: 1.0,
-          offset: 0,
-          lineWidth: 3.0,
-          amp: Math.max(6, subBass * (h * 0.46) + 4)
-        },
-        // 2. Punch & Melodic Fluid Ribbon (Amber / Crimson Fire)
-        {
-          color: 'rgba(255, 130, 0, 0.85)',
-          shadow: '#FF8200',
-          freq: 0.016,
-          speed: -1.25,
-          offset: Math.PI / 3,
-          lineWidth: 2.2,
-          amp: Math.max(5, (punchBass * 0.6 + vocalsMid * 0.4) * (h * 0.40) + 3)
-        },
-        // 3. Vocals & Snare Resonance (Electric Crimson / Violet)
-        {
-          color: 'rgba(236, 72, 153, 0.75)',
-          shadow: '#EC4899',
-          freq: 0.024,
-          speed: 1.5,
-          offset: Math.PI / 1.8,
-          lineWidth: 1.8,
-          amp: Math.max(4, (vocalsMid * 0.5 + snapHighs * 0.5) * (h * 0.34) + 2)
-        },
-        // 4. Ultra-Crisp Hi-Hat Shimmer 15kHz (Electric Cyan Glow)
-        {
-          color: 'rgba(0, 229, 255, 0.75)',
-          shadow: '#00E5FF',
-          freq: 0.038,
-          speed: -1.8,
-          offset: Math.PI / 1.2,
-          lineWidth: 1.4,
-          amp: Math.max(3, shimmer * (h * 0.30) + 2)
-        },
-      ];
+      // ─────────────────────────────────────────────────────────────
+      // MODE 1: MULTI-BAND NEON HARMONIC WAVES (Default)
+      // ─────────────────────────────────────────────────────────────
+      if (spectrumMode === 'waves') {
+        const waveLayers = [
+          { color: 'rgba(255, 215, 0, 0.95)', shadow: '#FFD700', freq: 0.009, speed: 1.0, offset: 0, lineWidth: 3.0, amp: Math.max(6, subBass * (h * 0.46) + 4) },
+          { color: 'rgba(255, 130, 0, 0.85)', shadow: '#FF8200', freq: 0.016, speed: -1.25, offset: Math.PI / 3, lineWidth: 2.2, amp: Math.max(5, (punchBass * 0.6 + vocalsMid * 0.4) * (h * 0.40) + 3) },
+          { color: 'rgba(236, 72, 153, 0.75)', shadow: '#EC4899', freq: 0.024, speed: 1.5, offset: Math.PI / 1.8, lineWidth: 1.8, amp: Math.max(4, (vocalsMid * 0.5 + snapHighs * 0.5) * (h * 0.34) + 2) },
+          { color: 'rgba(0, 229, 255, 0.75)', shadow: '#00E5FF', freq: 0.038, speed: -1.8, offset: Math.PI / 1.2, lineWidth: 1.4, amp: Math.max(3, shimmer * (h * 0.30) + 2) },
+        ];
 
-      waveLayers.forEach((wv) => {
-        ctx.strokeStyle = wv.color;
-        ctx.shadowColor = wv.shadow;
-        ctx.shadowBlur = 10;
-        ctx.lineWidth = wv.lineWidth;
+        waveLayers.forEach((wv) => {
+          ctx.strokeStyle = wv.color;
+          ctx.shadowColor = wv.shadow;
+          ctx.shadowBlur = 10;
+          ctx.lineWidth = wv.lineWidth;
+          ctx.beginPath();
+
+          for (let x = 0; x <= w; x += 2) {
+            const envelope = Math.sin((x / w) * Math.PI);
+            const y = midY + Math.sin(x * wv.freq + phase * wv.speed + wv.offset) * (wv.amp * envelope);
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        });
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // MODE 2: ANALOG VECTOR OSCILLOSCOPE (Time-Domain PCM Laser)
+      // ─────────────────────────────────────────────────────────────
+      else if (spectrumMode === 'oscilloscope') {
+        ctx.strokeStyle = 'rgba(255, 230, 80, 0.95)';
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = 14;
+        ctx.lineWidth = 2.5;
         ctx.beginPath();
 
-        // High-density sampling (every 2px) for maximum precision curve
-        for (let x = 0; x <= w; x += 2) {
-          const envelope = Math.sin((x / w) * Math.PI);
-          const y = midY + Math.sin(x * wv.freq + phase * wv.speed + wv.offset) * (wv.amp * envelope);
-          if (x === 0) ctx.moveTo(x, y);
+        const sliceWidth = w / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = timeData[i] / 128.0; // 0.0 to 2.0
+          const y = (v * midY) * 0.85 + (midY * 0.15);
+
+          if (i === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
+          x += sliceWidth;
         }
 
         ctx.stroke();
         ctx.shadowBlur = 0;
-      });
+
+        // Overlay sharp core laser line
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1.0;
+        ctx.stroke();
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // MODE 3: LIQUID AUDIO SILK / FILLED GOLDEN AURORA
+      // ─────────────────────────────────────────────────────────────
+      else if (spectrumMode === 'aurora') {
+        const amp = Math.max(8, subBass * (h * 0.45) + vocalsMid * (h * 0.25) + 4);
+        
+        // Fluid filled top/bottom aurora gradient
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, `rgba(255, 140, 0, ${0.15 + subBass * 0.3})`);
+        grad.addColorStop(0.5, `rgba(255, 215, 0, ${0.45 + subBass * 0.4})`);
+        grad.addColorStop(1, `rgba(255, 70, 0, ${0.15 + subBass * 0.3})`);
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(0, midY);
+
+        for (let x = 0; x <= w; x += 3) {
+          const envelope = Math.sin((x / w) * Math.PI);
+          const y = midY - Math.sin(x * 0.012 + phase * 1.2) * (amp * envelope);
+          ctx.lineTo(x, y);
+        }
+
+        for (let x = w; x >= 0; x -= 3) {
+          const envelope = Math.sin((x / w) * Math.PI);
+          const y = midY + Math.sin(x * 0.015 - phase * 0.9) * (amp * 0.8 * envelope);
+          ctx.lineTo(x, y);
+        }
+
+        ctx.closePath();
+        ctx.fill();
+
+        // Edge Laser Ribbon
+        ctx.strokeStyle = 'rgba(255, 240, 180, 0.95)';
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = 12;
+        ctx.lineWidth = 2.0;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // MODE 4: SYMMETRIC FLOATING NEON MICRO-SEGMENTS (Hardware Bars)
+      // ─────────────────────────────────────────────────────────────
+      else if (spectrumMode === 'bars') {
+        const numBars = Math.min(54, Math.floor(w / 8));
+        const barWidth = Math.max(3, (w / numBars) - 3);
+        const peakDots = peakDotsRef.current;
+
+        for (let i = 0; i < numBars; i++) {
+          const freqIdx = Math.floor((i / numBars) * (bufferLength * 0.65));
+          const val = freqData[freqIdx] / 255.0; // 0 to 1
+          const barHeight = Math.max(3, val * (h * 0.42));
+
+          const x = i * (barWidth + 3) + 2;
+
+          // Peak dot gravity physics
+          if (barHeight > peakDots[i]) {
+            peakDots[i] = barHeight;
+          } else {
+            peakDots[i] = Math.max(0, peakDots[i] - 0.8);
+          }
+
+          // Draw Symmetric Top and Bottom Bars
+          const barGrad = ctx.createLinearGradient(0, midY - barHeight, 0, midY + barHeight);
+          barGrad.addColorStop(0, '#FFD700');
+          barGrad.addColorStop(0.5, '#FFA500');
+          barGrad.addColorStop(1, '#FF4500');
+
+          ctx.fillStyle = barGrad;
+          ctx.fillRect(x, midY - barHeight, barWidth, barHeight * 2);
+
+          // Draw Floating Gravity Peak Dot
+          ctx.fillStyle = '#FFFFFF';
+          ctx.shadowColor = '#FFD700';
+          ctx.shadowBlur = 6;
+          ctx.fillRect(x, midY - peakDots[i] - 3, barWidth, 2);
+          ctx.fillRect(x, midY + peakDots[i] + 1, barWidth, 2);
+          ctx.shadowBlur = 0;
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // MODE 5: STARDUST PARTICLE CONSTELLATION
+      // ─────────────────────────────────────────────────────────────
+      else if (spectrumMode === 'particles') {
+        const nodes = particleNodesRef.current;
+        const totalEnergy = subBass * 1.5 + vocalsMid * 0.8;
+
+        nodes.forEach((node, i) => {
+          node.phase += 0.05;
+          const targetY = (Math.sin(node.phase) * 8) - (totalEnergy * (h * 0.36) * Math.sin(node.baseX * Math.PI));
+          node.yOffset += (targetY - node.yOffset) * 0.25;
+
+          const px = node.baseX * w;
+          const py = midY + node.yOffset;
+
+          // Draw Star Node
+          ctx.fillStyle = i % 2 === 0 ? '#FFD700' : '#00E5FF';
+          ctx.shadowColor = i % 2 === 0 ? '#FFD700' : '#00E5FF';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(px, py, node.size + (subBass * 2), 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+        });
+
+        // Draw connecting constellation lines
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.4)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        for (let i = 0; i < nodes.length; i++) {
+          const px = nodes[i].baseX * w;
+          const py = midY + nodes[i].yOffset;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+
+      // ─────────────────────────────────────────────────────────────
+      // MODE 6: DUAL HYBRID MASTER (Vector + Multi-Band Aura)
+      // ─────────────────────────────────────────────────────────────
+      else if (spectrumMode === 'hybrid') {
+        // 1. Ambient Background Multi-Band Frequency Aura
+        const bgGrad = ctx.createRadialGradient(
+          w / 2, midY, 0,
+          w / 2, midY, w * 0.45
+        );
+        bgGrad.addColorStop(0, `rgba(255, 215, 0, ${0.15 + subBass * 0.35})`);
+        bgGrad.addColorStop(0.5, `rgba(255, 100, 0, ${0.08 + punchBass * 0.2})`);
+        bgGrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        // 2. Real-time PCM Oscilloscope Beam
+        ctx.strokeStyle = 'rgba(255, 240, 100, 0.95)';
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = 12;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+
+        const sliceWidth = w / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = timeData[i] / 128.0;
+          const y = (v * midY) * 0.8 + (midY * 0.2);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+          x += sliceWidth;
+        }
+
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Core white electron thread
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1.0;
+        ctx.stroke();
+      }
     };
 
     draw();
@@ -206,7 +413,7 @@ export default function MusicPlayer() {
     return () => {
       if (animId) cancelAnimationFrame(animId);
     };
-  }, [analyser, isPlaying, isPlayerMinimized]);
+  }, [analyser, isPlaying, isPlayerMinimized, spectrumMode]);
 
 
   // ── Minimized Floating Pill (FAB)
@@ -271,9 +478,92 @@ export default function MusicPlayer() {
     <div className="fixed bottom-0 inset-x-0 z-50 bg-black/95 backdrop-blur-2xl border-t border-zinc-800 shadow-[0_-10px_30px_rgba(0,0,0,0.8)]">
       
       {/* Prominent Neon Wave Curves Visualizer Attached to Top of Player Bar */}
-      <div className="h-9 sm:h-11 w-full relative overflow-hidden pointer-events-none border-b border-white/5">
+      <div className="h-10 sm:h-12 w-full relative overflow-hidden border-b border-white/5 group">
         <canvas ref={canvasRef} className="w-full h-full" />
+
+        {/* Visualizer Mode Badge & Switcher Button */}
+        <div className="absolute top-2 right-4 flex items-center gap-2 z-10">
+          <AnimatePresence>
+            {modeNotice && (
+              <motion.span
+                initial={{ opacity: 0, x: 10, scale: 0.9 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                exit={{ opacity: 0, x: -10, scale: 0.9 }}
+                className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-yellow-400 text-black text-[10px] font-mono font-bold tracking-wider shadow-lg shadow-yellow-500/30"
+              >
+                ✓ {modeNotice}
+              </motion.span>
+            )}
+          </AnimatePresence>
+
+          <button
+            onClick={() => setShowModesMenu(!showModesMenu)}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/80 hover:bg-zinc-900 border border-yellow-500/40 hover:border-yellow-400 text-yellow-400 text-[11px] font-mono font-bold tracking-wider backdrop-blur-md shadow-md transition-all active:scale-95"
+            title="Cambiar tipo de visualizador de espectro"
+          >
+            <Activity className="w-3.5 h-3.5 animate-pulse" />
+            <span className="hidden xs:inline">{SPECTRUM_MODES.find(m => m.id === spectrumMode)?.short || 'ESPECTRO'}</span>
+            <span className="text-zinc-500 text-[9px]">▾</span>
+          </button>
+        </div>
       </div>
+
+      {/* Spectrum Modes Popover Drawer */}
+      <AnimatePresence>
+        {showModesMenu && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="border-b border-zinc-800 bg-black/95 backdrop-blur-2xl px-4 py-3"
+          >
+            <div className="max-w-5xl mx-auto">
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-[11px] font-mono font-bold text-yellow-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sliders className="w-3.5 h-3.5" /> Selecciona el Estilo de Espectro Reactivo
+                </span>
+                <button
+                  onClick={() => setShowModesMenu(false)}
+                  className="text-zinc-400 hover:text-white text-xs font-mono"
+                >
+                  ✕ Cerrar
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+                {SPECTRUM_MODES.map((m) => {
+                  const active = spectrumMode === m.id;
+                  const Icon = m.icon;
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => {
+                        handleSelectMode(m.id);
+                        setShowModesMenu(false);
+                      }}
+                      className={`flex flex-col items-start p-2.5 rounded-xl border text-left transition-all ${
+                        active
+                          ? 'bg-gradient-to-b from-yellow-500/25 to-yellow-500/5 border-yellow-400 shadow-md shadow-yellow-500/20'
+                          : 'bg-zinc-900/60 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-800/60 text-zinc-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 w-full mb-1">
+                        <Icon className={`w-3.5 h-3.5 ${active ? 'text-yellow-400' : 'text-zinc-400'}`} />
+                        <span className={`text-xs font-bold truncate ${active ? 'text-yellow-400' : 'text-white'}`}>
+                          {m.short}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-zinc-400 line-clamp-2 leading-tight">
+                        {m.desc}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
         
@@ -396,6 +686,15 @@ export default function MusicPlayer() {
               className="w-20 h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-400"
             />
           </div>
+
+          {/* Spectrum Visualizer Modes toggle */}
+          <button
+            onClick={() => setShowModesMenu(!showModesMenu)}
+            className={`p-2 rounded-xl border transition-colors ${showModesMenu ? 'bg-yellow-500/20 border-yellow-500/50 text-yellow-400' : 'border-zinc-800 text-zinc-400 hover:text-white'}`}
+            title="Cambiar Estilo de Espectro Reactivo"
+          >
+            <Activity className="w-4 h-4" />
+          </button>
 
           {/* Playlist drawer toggle */}
           <button
